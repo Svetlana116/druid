@@ -22,22 +22,30 @@ package org.apache.druid.tests.parallelized;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.apache.druid.guice.annotations.Json;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.apache.druid.tests.indexer.AbstractKafkaIndexingServiceTest;
 import org.apache.druid.tests.indexer.AbstractStreamIndexingTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
-@Test(groups = TestNGGroup.KAFKA_DATA_FORMAT)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.KAFKA_DATA_FORMAT;
+
+@Execution(ExecutionMode.CONCURRENT)
+@Tag(KAFKA_DATA_FORMAT)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITKafkaIndexingServiceDataFormatTest extends AbstractKafkaIndexingServiceTest
 {
   private static final boolean TRANSACTION_DISABLED = false;
@@ -56,37 +64,38 @@ public class ITKafkaIndexingServiceDataFormatTest extends AbstractKafkaIndexingS
    * must be present. Either {@code input_format} or {@code parser} directory should be present if {@code serializer}
    * is present.
    */
-  @DataProvider(parallel = true)
-  public static Object[][] resources() throws IOException
+  //@DataProvider(parallel = true)
+  public static Stream<Arguments> resources() throws IOException
   {
-    final List<Object[]> resources = new ArrayList<>();
+    final List<Arguments> resources = new ArrayList<>();
     final List<String> dataFormats = listDataFormatResources();
     for (String eachFormat : dataFormats) {
       final Map<String, String> spec = findTestSpecs(String.join("/", DATA_RESOURCE_ROOT, eachFormat));
       final String serializerPath = spec.get(AbstractStreamIndexingTest.SERIALIZER);
       spec.forEach((k, path) -> {
         if (!AbstractStreamIndexingTest.SERIALIZER.equals(k)) {
-          resources.add(new Object[]{TRANSACTION_DISABLED, serializerPath, k, path});
-          resources.add(new Object[]{TRANSACTION_ENABLED, serializerPath, k, path});
+          resources.add(Arguments.of(TRANSACTION_DISABLED, serializerPath, k, path));
+          resources.add(Arguments.of(TRANSACTION_ENABLED, serializerPath, k, path));
         }
       });
     }
-
-    return resources.toArray(new Object[0][]);
+    return resources.stream();
   }
 
   @Inject
   private @Json ObjectMapper jsonMapper;
 
-  @BeforeClass
-  public void beforeClass() throws Exception
+  @BeforeAll
+  void beforeClass() throws Exception
   {
     doBeforeClass();
   }
 
-  @Test(dataProvider = "resources")
-  public void testIndexData(boolean transactionEnabled, String serializerPath, String parserType, String specPath)
-      throws Exception
+
+  @ParameterizedTest
+  @MethodSource("resources")
+  void testIndexData(boolean transactionEnabled, String serializerPath, String parserType, String specPath)
+          throws Exception
   {
     doTestIndexDataStableState(transactionEnabled, serializerPath, parserType, specPath);
   }

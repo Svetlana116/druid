@@ -48,11 +48,11 @@ public abstract class AbstractKafkaIndexingServiceTest extends AbstractStreamInd
 
   @Override
   Function<String, String> generateStreamIngestionPropsTransform(
-      String streamName,
-      String fullDatasourceName,
-      String parserType,
-      String parserOrInputFormat,
-      IntegrationTestingConfig config
+          String streamName,
+          String fullDatasourceName,
+          String parserType,
+          String parserOrInputFormat,
+          IntegrationTestingConfig config
   )
   {
     final Map<String, Object> consumerConfigs = KafkaConsumerConfigs.getConsumerProperties();
@@ -62,62 +62,62 @@ public abstract class AbstractKafkaIndexingServiceTest extends AbstractStreamInd
     return spec -> {
       try {
         spec = StringUtils.replace(
-            spec,
-            "%%DATASOURCE%%",
-            fullDatasourceName
+                spec,
+                "%%DATASOURCE%%",
+                fullDatasourceName
         );
         spec = StringUtils.replace(
-            spec,
-            "%%STREAM_TYPE%%",
-            "kafka"
+                spec,
+                "%%STREAM_TYPE%%",
+                "kafka"
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TOPIC_KEY%%",
-            "topic"
+                spec,
+                "%%TOPIC_KEY%%",
+                "topic"
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TOPIC_VALUE%%",
-            streamName
+                spec,
+                "%%TOPIC_VALUE%%",
+                streamName
         );
         if (AbstractStreamIndexingTest.INPUT_FORMAT.equals(parserType)) {
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_FORMAT%%",
-              parserOrInputFormat
+                  spec,
+                  "%%INPUT_FORMAT%%",
+                  parserOrInputFormat
           );
           spec = StringUtils.replace(
-              spec,
-              "%%PARSER%%",
-              "null"
+                  spec,
+                  "%%PARSER%%",
+                  "null"
           );
         } else if (AbstractStreamIndexingTest.INPUT_ROW_PARSER.equals(parserType)) {
           spec = StringUtils.replace(
-              spec,
-              "%%PARSER%%",
-              parserOrInputFormat
+                  spec,
+                  "%%PARSER%%",
+                  parserOrInputFormat
           );
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_FORMAT%%",
-              "null"
+                  spec,
+                  "%%INPUT_FORMAT%%",
+                  "null"
           );
         }
         spec = StringUtils.replace(
-            spec,
-            "%%USE_EARLIEST_KEY%%",
-            "useEarliestOffset"
+                spec,
+                "%%USE_EARLIEST_KEY%%",
+                "useEarliestOffset"
         );
         spec = StringUtils.replace(
-            spec,
-            "%%STREAM_PROPERTIES_KEY%%",
-            "consumerProperties"
+                spec,
+                "%%STREAM_PROPERTIES_KEY%%",
+                "consumerProperties"
         );
         return StringUtils.replace(
-            spec,
-            "%%STREAM_PROPERTIES_VALUE%%",
-            jsonMapper.writeValueAsString(consumerProperties)
+                spec,
+                "%%STREAM_PROPERTIES_VALUE%%",
+                jsonMapper.writeValueAsString(consumerProperties)
         );
       }
       catch (Exception e) {
@@ -132,49 +132,49 @@ public abstract class AbstractKafkaIndexingServiceTest extends AbstractStreamInd
     return spec -> {
       try {
         spec = StringUtils.replace(
-            spec,
-            "%%DATASOURCE%%",
-            fullDatasourceName
+                spec,
+                "%%DATASOURCE%%",
+                fullDatasourceName
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TIMEBOUNDARY_RESPONSE_TIMESTAMP%%",
-            TIMESTAMP_FMT.print(FIRST_EVENT_TIME)
+                spec,
+                "%%TIMEBOUNDARY_RESPONSE_TIMESTAMP%%",
+                TIMESTAMP_FMT.print(FIRST_EVENT_TIME)
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TIMEBOUNDARY_RESPONSE_MAXTIME%%",
-            TIMESTAMP_FMT.print(FIRST_EVENT_TIME.plusSeconds(TOTAL_NUMBER_OF_SECOND - 1))
+                spec,
+                "%%TIMEBOUNDARY_RESPONSE_MAXTIME%%",
+                TIMESTAMP_FMT.print(FIRST_EVENT_TIME.plusSeconds(TOTAL_NUMBER_OF_SECOND - 1))
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TIMEBOUNDARY_RESPONSE_MINTIME%%",
-            TIMESTAMP_FMT.print(FIRST_EVENT_TIME)
+                spec,
+                "%%TIMEBOUNDARY_RESPONSE_MINTIME%%",
+                TIMESTAMP_FMT.print(FIRST_EVENT_TIME)
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TIMESERIES_QUERY_START%%",
-            INTERVAL_FMT.print(FIRST_EVENT_TIME)
+                spec,
+                "%%TIMESERIES_QUERY_START%%",
+                INTERVAL_FMT.print(FIRST_EVENT_TIME)
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TIMESERIES_QUERY_END%%",
-            INTERVAL_FMT.print(FIRST_EVENT_TIME.plusSeconds(TOTAL_NUMBER_OF_SECOND - 1).plusMinutes(2))
+                spec,
+                "%%TIMESERIES_QUERY_END%%",
+                INTERVAL_FMT.print(FIRST_EVENT_TIME.plusSeconds(TOTAL_NUMBER_OF_SECOND - 1).plusMinutes(2))
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TIMESERIES_RESPONSE_TIMESTAMP%%",
-            TIMESTAMP_FMT.print(FIRST_EVENT_TIME)
+                spec,
+                "%%TIMESERIES_RESPONSE_TIMESTAMP%%",
+                TIMESTAMP_FMT.print(FIRST_EVENT_TIME)
         );
         spec = StringUtils.replace(
-            spec,
-            "%%TIMESERIES_ADDED%%",
-            Long.toString(getSumOfEventSequence(EVENTS_PER_SECOND) * TOTAL_NUMBER_OF_SECOND)
+                spec,
+                "%%TIMESERIES_ADDED%%",
+                Long.toString(getSumOfEventSequence(EVENTS_PER_SECOND) * TOTAL_NUMBER_OF_SECOND)
         );
         return StringUtils.replace(
-            spec,
-            "%%TIMESERIES_NUMEVENTS%%",
-            Integer.toString(EVENTS_PER_SECOND * TOTAL_NUMBER_OF_SECOND)
+                spec,
+                "%%TIMESERIES_NUMEVENTS%%",
+                Integer.toString(EVENTS_PER_SECOND * TOTAL_NUMBER_OF_SECOND)
         );
       }
       catch (Exception e) {

@@ -19,15 +19,18 @@
 
 package org.apache.druid.tests.parallelized;
 
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.apache.druid.tests.indexer.AbstractKafkaIndexingServiceTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-@Test(groups = TestNGGroup.KAFKA_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.KAFKA_INDEX;
+
+@Tag(KAFKA_INDEX)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITKafkaIndexingServiceNonTransactionalParallelizedTest extends AbstractKafkaIndexingServiceTest
 {
   @Override
@@ -36,8 +39,8 @@ public class ITKafkaIndexingServiceNonTransactionalParallelizedTest extends Abst
     return "kafka_non_transactional_parallelized";
   }
 
-  @BeforeClass
-  public void beforeClass() throws Exception
+  @BeforeAll
+  void beforeClass() throws Exception
   {
     doBeforeClass();
   }
@@ -47,7 +50,7 @@ public class ITKafkaIndexingServiceNonTransactionalParallelizedTest extends Abst
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKafkaIndexDataWithStartStopSupervisor() throws Exception
+  void testKafkaIndexDataWithStartStopSupervisor() throws Exception
   {
     doTestIndexDataWithStartStopSupervisor(false);
   }
@@ -57,7 +60,7 @@ public class ITKafkaIndexingServiceNonTransactionalParallelizedTest extends Abst
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKafkaIndexDataWithKafkaReshardSplit() throws Exception
+  void testKafkaIndexDataWithKafkaReshardSplit() throws Exception
   {
     doTestIndexDataWithStreamReshardSplit(false);
   }

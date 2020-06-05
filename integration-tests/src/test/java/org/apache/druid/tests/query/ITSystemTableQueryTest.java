@@ -22,16 +22,18 @@ package org.apache.druid.tests.query;
 import com.google.inject.Inject;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.SqlTestQueryHelper;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-@Test(groups = TestNGGroup.QUERY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.QUERY;
+
+@Tag(QUERY)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITSystemTableQueryTest
 {
   private static final String WIKIPEDIA_DATA_SOURCE = "wikipedia_editstream";
@@ -45,17 +47,17 @@ public class ITSystemTableQueryTest
   @Inject
   IntegrationTestingConfig config;
 
-  @BeforeMethod
-  public void before()
+  @BeforeEach
+  void before()
   {
     // ensure that wikipedia segments are loaded completely
     ITRetryUtil.retryUntilTrue(
-        () -> coordinatorClient.areSegmentsLoaded(WIKIPEDIA_DATA_SOURCE), "wikipedia segment load"
+            () -> coordinatorClient.areSegmentsLoaded(WIKIPEDIA_DATA_SOURCE), "wikipedia segment load"
     );
 
     // ensure that the twitter segments are loaded completely
     ITRetryUtil.retryUntilTrue(
-        () -> coordinatorClient.areSegmentsLoaded(TWITTER_DATA_SOURCE), "twitter segment load"
+            () -> coordinatorClient.areSegmentsLoaded(TWITTER_DATA_SOURCE), "twitter segment load"
     );
   }
 

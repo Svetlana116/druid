@@ -26,12 +26,12 @@ import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.jackson.JacksonUtils;
 import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.testing.clients.EventReceiverFirehoseTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ServerDiscoveryUtil;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.joda.time.DateTime;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
@@ -41,11 +41,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import static org.apache.druid.tests.TestNGGroup.REALTIME_INDEX;
+
 /**
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.
  */
-@Test(groups = TestNGGroup.REALTIME_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@Tag(REALTIME_INDEX)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtimeIndexTaskTest
 {
   private static final Logger LOG = new Logger(ITAppenderatorDriverRealtimeIndexTaskTest.class);
@@ -58,7 +60,7 @@ public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtim
   private static final int EXPECTED_NUM_ROWS = 22;
 
   @Test
-  public void testRealtimeIndexTask()
+  void testRealtimeIndexTask()
   {
     doTest();
   }
@@ -71,8 +73,8 @@ public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtim
     InputStreamReader isr;
     try {
       isr = new InputStreamReader(
-          ITRealtimeIndexTaskTest.class.getResourceAsStream(EVENT_DATA_FILE),
-          StandardCharsets.UTF_8
+              ITRealtimeIndexTaskTest.class.getResourceAsStream(EVENT_DATA_FILE),
+              StandardCharsets.UTF_8
       );
     }
     catch (Exception e) {
@@ -84,11 +86,11 @@ public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtim
       String host = config.getMiddleManagerHost() + ":" + eventReceiverSelector.pick().getPort();
       LOG.info("Event Receiver Found at host [%s]", host);
       EventReceiverFirehoseTestClient client = new EventReceiverFirehoseTestClient(
-          host,
-          EVENT_RECEIVER_SERVICE_NAME,
-          jsonMapper,
-          httpClient,
-          smileMapper
+              host,
+              EVENT_RECEIVER_SERVICE_NAME,
+              jsonMapper,
+              httpClient,
+              smileMapper
       );
       // there are 22 lines in the file
       int i = 1;

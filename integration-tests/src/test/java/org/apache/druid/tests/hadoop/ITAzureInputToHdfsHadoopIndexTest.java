@@ -19,10 +19,11 @@
 
 package org.apache.druid.tests.hadoop;
 
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Tag;
+
+import static org.apache.druid.tests.TestNGGroup.HADOOP_AZURE_TO_HDFS;
 
 /**
  * IMPORTANT:
@@ -39,8 +40,8 @@ import org.testng.annotations.Test;
  *    integration-tests/docker/environment-configs/override-examples/hadoop/azure_to_hdfs for env vars to provide.
  * 4) Run the test with -Dstart.hadoop.docker=true -Dextra.datasource.name.suffix='' in the mvn command
  */
-@Test(groups = TestNGGroup.HADOOP_AZURE_TO_HDFS)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@Tag(HADOOP_AZURE_TO_HDFS)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITAzureInputToHdfsHadoopIndexTest extends AbstractAzureInputHadoopIndexTest
 {
   public void testGcsIndexData() throws Exception

@@ -23,83 +23,84 @@ import com.google.common.collect.ImmutableList;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.java.util.common.StringUtils;
-import org.testng.annotations.DataProvider;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import java.io.Closeable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-public abstract class AbstractHdfsInputSourceParallelIndexTest extends AbstractITBatchIndexTest
+public abstract class AbstractHdfsInputSourceParallelIndexTest extends AbstractITBatchIndexTest implements ArgumentsProvider
 {
   private static final String INDEX_TASK = "/indexer/wikipedia_cloud_index_task.json";
   private static final String INDEX_QUERIES_RESOURCE = "/indexer/wikipedia_index_queries.json";
   private static final String INPUT_SOURCE_PATHS_KEY = "paths";
 
-  @DataProvider
-  public static Object[][] resources()
-  {
-    return new Object[][]{
-        {new Pair<>(INPUT_SOURCE_PATHS_KEY,
+  @Override
+  public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext) throws Exception {
+    return Stream.of(
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
                     "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
-        )},
-        {new Pair<>(INPUT_SOURCE_PATHS_KEY,
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
                     ImmutableList.of(
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
                     )
-        )},
-        {new Pair<>(INPUT_SOURCE_PATHS_KEY,
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
                     ImmutableList.of(
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data1%%FILE_EXTENSION%%",
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data2%%FILE_EXTENSION%%",
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data3%%FILE_EXTENSION%%"
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data1%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data2%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data3%%FILE_EXTENSION%%"
                     )
-        )}
-    };
+            )));
   }
 
   void doTest(Pair<String, List> hdfsInputSource, InputFormatDetails inputFormatDetails) throws Exception
   {
     final String indexDatasource = "wikipedia_index_test_" + UUID.randomUUID();
     try (
-        final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
     ) {
       final Function<String, String> hdfsPropsTransform = spec -> {
         try {
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_TYPE%%",
-              "hdfs"
+                  spec,
+                  "%%INPUT_SOURCE_TYPE%%",
+                  "hdfs"
           );
           spec = StringUtils.replace(
-              spec,
-              "%%PARTITIONS_SPEC%%",
-              jsonMapper.writeValueAsString(new DynamicPartitionsSpec(null, null))
+                  spec,
+                  "%%PARTITIONS_SPEC%%",
+                  jsonMapper.writeValueAsString(new DynamicPartitionsSpec(null, null))
           );
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_KEY%%",
-              hdfsInputSource.lhs
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_KEY%%",
+                  hdfsInputSource.lhs
           );
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_FORMAT_TYPE%%",
-              inputFormatDetails.getInputFormatType()
+                  spec,
+                  "%%INPUT_FORMAT_TYPE%%",
+                  inputFormatDetails.getInputFormatType()
           );
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_VALUE%%",
-              jsonMapper.writeValueAsString(hdfsInputSource.rhs)
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_VALUE%%",
+                  jsonMapper.writeValueAsString(hdfsInputSource.rhs)
           );
           spec = StringUtils.replace(
-              spec,
-              "%%FOLDER_SUFFIX%%",
-              inputFormatDetails.getFolderSuffix()
+                  spec,
+                  "%%FOLDER_SUFFIX%%",
+                  inputFormatDetails.getFolderSuffix()
           );
           spec = StringUtils.replace(
-              spec,
-              "%%FILE_EXTENSION%%",
-              inputFormatDetails.getFileExtension()
+                  spec,
+                  "%%FILE_EXTENSION%%",
+                  inputFormatDetails.getFileExtension()
           );
           return spec;
         }
@@ -109,13 +110,13 @@ public abstract class AbstractHdfsInputSourceParallelIndexTest extends AbstractI
       };
 
       doIndexTest(
-          indexDatasource,
-          INDEX_TASK,
-          hdfsPropsTransform,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              indexDatasource,
+              INDEX_TASK,
+              hdfsPropsTransform,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
     }
   }

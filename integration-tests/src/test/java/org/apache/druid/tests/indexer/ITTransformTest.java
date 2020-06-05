@@ -19,16 +19,21 @@
 
 package org.apache.druid.tests.indexer;
 
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
 
-@Test(groups = {TestNGGroup.BATCH_INDEX, TestNGGroup.QUICKSTART_COMPATIBLE})
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
+import static org.apache.druid.tests.TestNGGroup.QUICKSTART_COMPATIBLE;
+
+@Tag(BATCH_INDEX)
+@Tag(QUICKSTART_COMPATIBLE)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITTransformTest extends AbstractITBatchIndexTest
 {
   private static final String INDEX_TASK_WITH_FIREHOSE = "/indexer/wikipedia_index_task_with_transform.json";
@@ -42,73 +47,75 @@ public class ITTransformTest extends AbstractITBatchIndexTest
   private static final String REINDEX_DATASOURCE = "wikipedia_reindex_test";
 
   @Test
-  public void testIndexAndReIndexWithTransformSpec() throws IOException
+  void testIndexAndReIndexWithTransformSpec() throws IOException
   {
     final String reindexDatasourceWithDruidInputSource = REINDEX_DATASOURCE + "-druidInputSource";
 
     try (
-        final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored2 = unloader(reindexDatasourceWithDruidInputSource + config.getExtraDatasourceNameSuffix())
+            final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored2 = unloader(reindexDatasourceWithDruidInputSource + config.getExtraDatasourceNameSuffix())
     ) {
       doIndexTest(
-          INDEX_DATASOURCE,
-          INDEX_TASK_WITH_INPUT_SOURCE,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              INDEX_DATASOURCE,
+              INDEX_TASK_WITH_INPUT_SOURCE,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
       doReindexTest(
-          INDEX_DATASOURCE,
-          reindexDatasourceWithDruidInputSource,
-          REINDEX_TASK_WITH_DRUID_INPUT_SOURCE,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              reindexDatasourceWithDruidInputSource,
+              REINDEX_TASK_WITH_DRUID_INPUT_SOURCE,
+              REINDEX_QUERIES_RESOURCE
       );
     }
   }
 
-  @Test(enabled = false)
-  public void testIndexAndReIndexUsingIngestSegmentWithTransforms() throws IOException
+  @Disabled
+  @Test
+  void testIndexAndReIndexUsingIngestSegmentWithTransforms() throws IOException
   {
     // TODO: re-instate this test when https://github.com/apache/druid/issues/9591 is fixed
     // Move the re-index step into testIndexAndReIndexWithTransformSpec for faster tests!
     final String reindexDatasource = REINDEX_DATASOURCE + "-testIndexData";
     try (
-        final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix())
+            final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix())
     ) {
       doIndexTest(
-          INDEX_DATASOURCE,
-          INDEX_TASK_WITH_INPUT_SOURCE,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              INDEX_DATASOURCE,
+              INDEX_TASK_WITH_INPUT_SOURCE,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
       doReindexTest(
-          INDEX_DATASOURCE,
-          reindexDatasource,
-          REINDEX_TASK,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              reindexDatasource,
+              REINDEX_TASK,
+              REINDEX_QUERIES_RESOURCE
       );
     }
   }
 
-  @Test(enabled = false)
-  public void testIndexWithFirehoseAndTransforms() throws IOException
+  @Disabled
+  @Test
+  void testIndexWithFirehoseAndTransforms() throws IOException
   {
     // TODO: re-instate this test when https://github.com/apache/druid/issues/9589 is fixed
     final String indexDatasource = INDEX_DATASOURCE + "-firehose";
     try (
-        final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
     ) {
       doIndexTest(
-          indexDatasource,
-          INDEX_TASK_WITH_FIREHOSE,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              indexDatasource,
+              INDEX_TASK_WITH_FIREHOSE,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
     }
   }

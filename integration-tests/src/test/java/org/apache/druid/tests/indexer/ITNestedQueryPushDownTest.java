@@ -27,20 +27,23 @@ import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.clients.ClientInfoResourceTestClient;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-@Test(groups = TestNGGroup.QUERY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.QUERY;
+
+@Tag(QUERY)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITNestedQueryPushDownTest extends AbstractIndexerTest
 {
   private static final String WIKITICKER_DATA_SOURCE = "wikiticker";
@@ -62,14 +65,14 @@ public class ITNestedQueryPushDownTest extends AbstractIndexerTest
 
   private String fullDatasourceName;
 
-  @BeforeSuite
-  public void setFullDatasourceName()
+  @BeforeAll
+  void setFullDatasourceName()
   {
     fullDatasourceName = WIKITICKER_DATA_SOURCE + config.getExtraDatasourceNameSuffix();
   }
 
   @Test
-  public void testIndexData()
+  void testIndexData()
   {
     try {
       loadData();
@@ -84,9 +87,9 @@ public class ITNestedQueryPushDownTest extends AbstractIndexerTest
       }
 
       queryResponseTemplate = StringUtils.replace(
-          queryResponseTemplate,
-          "%%DATASOURCE%%",
-          fullDatasourceName
+              queryResponseTemplate,
+              "%%DATASOURCE%%",
+              fullDatasourceName
       );
 
       queryHelper.testQueriesFromString(queryResponseTemplate, 2);
@@ -105,7 +108,7 @@ public class ITNestedQueryPushDownTest extends AbstractIndexerTest
     LOG.info("TaskID for loading index task %s", taskID);
     indexer.waitUntilTaskCompletes(taskID);
     ITRetryUtil.retryUntilTrue(
-        () -> coordinator.areSegmentsLoaded(fullDatasourceName), "Segment Load"
+            () -> coordinator.areSegmentsLoaded(fullDatasourceName), "Segment Load"
     );
   }
 }

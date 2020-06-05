@@ -20,15 +20,17 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.logger.Logger;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 
-@Test(groups = TestNGGroup.BATCH_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
+
+@Tag(BATCH_INDEX)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITSystemTableBatchIndexTaskTest extends AbstractITBatchIndexTest
 {
   private static final Logger LOG = new Logger(ITSystemTableBatchIndexTaskTest.class);
@@ -37,16 +39,16 @@ public class ITSystemTableBatchIndexTaskTest extends AbstractITBatchIndexTest
   private static final String INDEX_DATASOURCE = "wikipedia_index_test";
 
   @Test
-  public void testIndexData() throws Exception
+  void testIndexData() throws Exception
   {
     LOG.info("Starting batch index sys table queries");
     try (
-        final Closeable ignored = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix())
+            final Closeable ignored = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix())
     ) {
       doIndexTestSqlTest(
-          INDEX_DATASOURCE,
-          INDEX_TASK,
-          SYSTEM_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              INDEX_TASK,
+              SYSTEM_QUERIES_RESOURCE
       );
     }
   }

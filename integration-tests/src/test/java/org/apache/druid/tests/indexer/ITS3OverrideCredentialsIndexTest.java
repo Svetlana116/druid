@@ -24,15 +24,17 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.druid.indexer.TaskState;
 import org.apache.druid.indexer.TaskStatusPlus;
 import org.apache.druid.java.util.common.StringUtils;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.Assert;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 import java.util.UUID;
 import java.util.function.Function;
+
+import static org.apache.druid.tests.TestNGGroup.S3_INGESTION;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * IMPORTANT:
@@ -47,8 +49,8 @@ import java.util.function.Function;
  *    access to the bucket and path specified in #1. The credentials that does have access to the bucket and path
  *    specified in #1 should be set to the env variable OVERRIDE_S3_ACCESS_KEY and OVERRIDE_S3_SECRET_KEY
  */
-@Test(groups = TestNGGroup.S3_INGESTION)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@Tag(S3_INGESTION)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
 {
   private static final String INDEX_TASK_WITH_OVERRIDE = "/indexer/wikipedia_override_credentials_index_task.json";
@@ -59,62 +61,62 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
   private static final String WIKIPEDIA_DATA_2 = "wikipedia_index_data2.json";
   private static final String WIKIPEDIA_DATA_3 = "wikipedia_index_data3.json";
   private static final ImmutableList INPUT_SOURCE_OBJECTS_VALUE = ImmutableList.of
-      (
-          ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_1),
-          ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_2),
-          ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_3)
-      );
+          (
+                  ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_1),
+                  ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_2),
+                  ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_3)
+          );
 
   @Test
-  public void testS3WithValidOverrideCredentialsIndexDataShouldSucceed() throws Exception
+  void testS3WithValidOverrideCredentialsIndexDataShouldSucceed() throws Exception
   {
     final String indexDatasource = "wikipedia_index_test_" + UUID.randomUUID();
     try (
-        final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
     ) {
       final Function<String, String> s3PropsTransform = spec -> {
         try {
           String inputSourceValue = jsonMapper.writeValueAsString(INPUT_SOURCE_OBJECTS_VALUE);
           inputSourceValue = StringUtils.replace(
-              inputSourceValue,
-              "%%BUCKET%%",
-              config.getCloudBucket()
+                  inputSourceValue,
+                  "%%BUCKET%%",
+                  config.getCloudBucket()
           );
           inputSourceValue = StringUtils.replace(
-              inputSourceValue,
-              "%%PATH%%",
-              config.getCloudPath()
+                  inputSourceValue,
+                  "%%PATH%%",
+                  config.getCloudPath()
           );
 
           spec = StringUtils.replace(
-              spec,
-              "%%ACCESS_KEY_PROPERTY_VALUE%%",
-              jsonMapper.writeValueAsString(
-                  ImmutableMap.of("type", "environment", "variable", "OVERRIDE_S3_ACCESS_KEY")
-              )
+                  spec,
+                  "%%ACCESS_KEY_PROPERTY_VALUE%%",
+                  jsonMapper.writeValueAsString(
+                          ImmutableMap.of("type", "environment", "variable", "OVERRIDE_S3_ACCESS_KEY")
+                  )
           );
           spec = StringUtils.replace(
-              spec,
-              "%%SECRET_KEY_PROPERTY_VALUE%%",
-              jsonMapper.writeValueAsString(
-                  ImmutableMap.of("type", "environment", "variable", "OVERRIDE_S3_SECRET_KEY")
-              )
+                  spec,
+                  "%%SECRET_KEY_PROPERTY_VALUE%%",
+                  jsonMapper.writeValueAsString(
+                          ImmutableMap.of("type", "environment", "variable", "OVERRIDE_S3_SECRET_KEY")
+                  )
           );
 
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_TYPE%%",
-              "s3"
+                  spec,
+                  "%%INPUT_SOURCE_TYPE%%",
+                  "s3"
           );
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_KEY%%",
-              INPUT_SOURCE_OBJECTS_KEY
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_KEY%%",
+                  INPUT_SOURCE_OBJECTS_KEY
           );
           return StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_VALUE%%",
-              inputSourceValue
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_VALUE%%",
+                  inputSourceValue
           );
         }
         catch (Exception e) {
@@ -123,19 +125,19 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
       };
 
       doIndexTest(
-          indexDatasource,
-          INDEX_TASK_WITH_OVERRIDE,
-          s3PropsTransform,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              indexDatasource,
+              INDEX_TASK_WITH_OVERRIDE,
+              s3PropsTransform,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
     }
   }
 
   @Test
-  public void testS3WithoutOverrideCredentialsIndexDataShouldFailed() throws Exception
+  void testS3WithoutOverrideCredentialsIndexDataShouldFailed() throws Exception
   {
     final String indexDatasource = "wikipedia_index_test_" + UUID.randomUUID();
     try {
@@ -143,30 +145,30 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
         try {
           String inputSourceValue = jsonMapper.writeValueAsString(INPUT_SOURCE_OBJECTS_VALUE);
           inputSourceValue = StringUtils.replace(
-              inputSourceValue,
-              "%%BUCKET%%",
-              config.getCloudBucket()
+                  inputSourceValue,
+                  "%%BUCKET%%",
+                  config.getCloudBucket()
           );
           inputSourceValue = StringUtils.replace(
-              inputSourceValue,
-              "%%PATH%%",
-              config.getCloudPath()
+                  inputSourceValue,
+                  "%%PATH%%",
+                  config.getCloudPath()
           );
 
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_TYPE%%",
-              "s3"
+                  spec,
+                  "%%INPUT_SOURCE_TYPE%%",
+                  "s3"
           );
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_KEY%%",
-              INPUT_SOURCE_OBJECTS_KEY
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_KEY%%",
+                  INPUT_SOURCE_OBJECTS_KEY
           );
           return StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_VALUE%%",
-              inputSourceValue
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_VALUE%%",
+                  inputSourceValue
           );
         }
         catch (Exception e) {
@@ -175,11 +177,11 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
       };
       final String fullDatasourceName = indexDatasource + config.getExtraDatasourceNameSuffix();
       final String taskSpec = s3PropsTransform.apply(
-          StringUtils.replace(
-              getResourceAsString(INDEX_TASK_WITHOUT_OVERRIDE),
-              "%%DATASOURCE%%",
-              fullDatasourceName
-          )
+              StringUtils.replace(
+                      getResourceAsString(INDEX_TASK_WITHOUT_OVERRIDE),
+                      "%%DATASOURCE%%",
+                      fullDatasourceName
+              )
       );
       final String taskID = indexer.submitTask(taskSpec);
       indexer.waitUntilTaskFails(taskID);
@@ -187,11 +189,11 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
       // Index task is expected to fail as the default S3 Credentials in Druid's config (druid.s3.accessKey and
       // druid.s3.secretKey should not have access to the bucket and path for our data. (Refer to the setup instruction
       // at the top of this test class.
-      Assert.assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
-      Assert.assertNotNull(taskStatusPlus.getErrorMsg());
-      Assert.assertTrue(
-          taskStatusPlus.getErrorMsg().contains("com.amazonaws.services.s3.model.AmazonS3Exception"),
-          "Expect task to fail with AmazonS3Exception");
+      assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
+      assertNotNull(taskStatusPlus.getErrorMsg());
+      assertTrue(
+              taskStatusPlus.getErrorMsg().contains("com.amazonaws.services.s3.model.AmazonS3Exception"),
+              "Expect task to fail with AmazonS3Exception");
     }
     finally {
       // If the test pass, then there is no datasource to unload
@@ -200,7 +202,7 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
   }
 
   @Test
-  public void testS3WithInvalidOverrideCredentialsIndexDataShouldFailed() throws Exception
+  void testS3WithInvalidOverrideCredentialsIndexDataShouldFailed() throws Exception
   {
     final String indexDatasource = "wikipedia_index_test_" + UUID.randomUUID();
     try {
@@ -208,45 +210,45 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
         try {
           String inputSourceValue = jsonMapper.writeValueAsString(INPUT_SOURCE_OBJECTS_VALUE);
           inputSourceValue = StringUtils.replace(
-              inputSourceValue,
-              "%%BUCKET%%",
-              config.getCloudBucket()
+                  inputSourceValue,
+                  "%%BUCKET%%",
+                  config.getCloudBucket()
           );
           inputSourceValue = StringUtils.replace(
-              inputSourceValue,
-              "%%PATH%%",
-              config.getCloudPath()
+                  inputSourceValue,
+                  "%%PATH%%",
+                  config.getCloudPath()
           );
 
           spec = StringUtils.replace(
-              spec,
-              "%%ACCESS_KEY_PROPERTY_VALUE%%",
-              jsonMapper.writeValueAsString(
-                  ImmutableMap.of("type", "environment", "variable", "NON_EXISTENT_INVALID_ENV_VAR")
-              )
+                  spec,
+                  "%%ACCESS_KEY_PROPERTY_VALUE%%",
+                  jsonMapper.writeValueAsString(
+                          ImmutableMap.of("type", "environment", "variable", "NON_EXISTENT_INVALID_ENV_VAR")
+                  )
           );
           spec = StringUtils.replace(
-              spec,
-              "%%SECRET_KEY_PROPERTY_VALUE%%",
-              jsonMapper.writeValueAsString(
-                  ImmutableMap.of("type", "environment", "variable", "NON_EXISTENT_INVALID_ENV_VAR")
-              )
+                  spec,
+                  "%%SECRET_KEY_PROPERTY_VALUE%%",
+                  jsonMapper.writeValueAsString(
+                          ImmutableMap.of("type", "environment", "variable", "NON_EXISTENT_INVALID_ENV_VAR")
+                  )
           );
 
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_TYPE%%",
-              "s3"
+                  spec,
+                  "%%INPUT_SOURCE_TYPE%%",
+                  "s3"
           );
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_KEY%%",
-              INPUT_SOURCE_OBJECTS_KEY
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_KEY%%",
+                  INPUT_SOURCE_OBJECTS_KEY
           );
           return StringUtils.replace(
-              spec,
-              "%%INPUT_SOURCE_PROPERTY_VALUE%%",
-              inputSourceValue
+                  spec,
+                  "%%INPUT_SOURCE_PROPERTY_VALUE%%",
+                  inputSourceValue
           );
         }
         catch (Exception e) {
@@ -256,21 +258,21 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
 
       final String fullDatasourceName = indexDatasource + config.getExtraDatasourceNameSuffix();
       final String taskSpec = s3PropsTransform.apply(
-          StringUtils.replace(
-              getResourceAsString(INDEX_TASK_WITH_OVERRIDE),
-              "%%DATASOURCE%%",
-              fullDatasourceName
-          )
+              StringUtils.replace(
+                      getResourceAsString(INDEX_TASK_WITH_OVERRIDE),
+                      "%%DATASOURCE%%",
+                      fullDatasourceName
+              )
       );
       final String taskID = indexer.submitTask(taskSpec);
       indexer.waitUntilTaskFails(taskID);
       TaskStatusPlus taskStatusPlus = indexer.getTaskStatus(taskID);
       // Index task is expected to fail as the overrided s3 access key and s3 secret key cannot be null
-      Assert.assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
-      Assert.assertNotNull(taskStatusPlus.getErrorMsg());
-      Assert.assertTrue(
-          taskStatusPlus.getErrorMsg().contains("IllegalArgumentException: Access key cannot be null"),
-          "Expect task to fail with IllegalArgumentException: Access key cannot be null");
+      assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
+      assertNotNull(taskStatusPlus.getErrorMsg());
+      assertTrue(
+              taskStatusPlus.getErrorMsg().contains("IllegalArgumentException: Access key cannot be null"),
+              "Expect task to fail with IllegalArgumentException: Access key cannot be null");
     }
     finally {
       // If the test pass, then there is no datasource to unload

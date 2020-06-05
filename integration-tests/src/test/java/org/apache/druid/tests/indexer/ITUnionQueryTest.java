@@ -34,17 +34,18 @@ import org.apache.druid.java.util.http.client.response.StatusResponseHandler;
 import org.apache.druid.java.util.http.client.response.StatusResponseHolder;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.clients.EventReceiverFirehoseTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.guice.TestClient;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.ServerDiscoveryUtil;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.joda.time.DateTime;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,8 +55,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Test(groups = TestNGGroup.QUERY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.QUERY;
+
+@Tag(QUERY)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITUnionQueryTest extends AbstractIndexerTest
 {
   private static final Logger LOG = new Logger(ITUnionQueryTest.class);
@@ -77,14 +80,14 @@ public class ITUnionQueryTest extends AbstractIndexerTest
 
   private String fullDatasourceName;
 
-  @BeforeSuite
-  public void setFullDatasourceName()
+  @BeforeAll
+  void setFullDatasourceName()
   {
     fullDatasourceName = UNION_DATASOURCE + config.getExtraDatasourceNameSuffix();
   }
 
   @Test
-  public void testUnionQuery() throws IOException
+  void testUnionQuery() throws IOException
   {
     final int numTasks = 3;
     final Closer closer = Closer.create();
@@ -94,18 +97,18 @@ public class ITUnionQueryTest extends AbstractIndexerTest
     try {
       // Load 4 datasources with same dimensions
       String task = setShutOffTime(
-          getResourceAsString(UNION_TASK_RESOURCE),
-          DateTimes.utc(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3))
+              getResourceAsString(UNION_TASK_RESOURCE),
+              DateTimes.utc(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3))
       );
       List<String> taskIDs = new ArrayList<>();
       for (int i = 0; i < numTasks; i++) {
         taskIDs.add(
-            indexer.submitTask(
-                withServiceName(
-                    withDataSource(task, fullDatasourceName + i),
-                    EVENT_RECEIVER_SERVICE_PREFIX + i
+                indexer.submitTask(
+                        withServiceName(
+                                withDataSource(task, fullDatasourceName + i),
+                                EVENT_RECEIVER_SERVICE_PREFIX + i
+                        )
                 )
-            )
         );
       }
       for (int i = 0; i < numTasks; i++) {
@@ -114,20 +117,20 @@ public class ITUnionQueryTest extends AbstractIndexerTest
 
       // wait until all events are ingested
       ITRetryUtil.retryUntil(
-          () -> {
-            for (int i = 0; i < numTasks; i++) {
-              final int countRows = queryHelper.countRows(fullDatasourceName + i, "2013-08-31/2013-09-01");
-              if (countRows < 5) {
-                LOG.warn("%d events have been ingested to %s so far", countRows, fullDatasourceName + i);
-                return false;
-              }
-            }
-            return true;
-          },
-          true,
-          1000,
-          100,
-          "Waiting all events are ingested"
+              () -> {
+                for (int i = 0; i < numTasks; i++) {
+                  final int countRows = queryHelper.countRows(fullDatasourceName + i, "2013-08-31/2013-09-01");
+                  if (countRows < 5) {
+                    LOG.warn("%d events have been ingested to %s so far", countRows, fullDatasourceName + i);
+                    return false;
+                  }
+                }
+                return true;
+              },
+              true,
+              1000,
+              100,
+              "Waiting all events are ingested"
       );
 
       // should hit the queries on realtime task
@@ -143,9 +146,9 @@ public class ITUnionQueryTest extends AbstractIndexerTest
       }
 
       queryResponseTemplate = StringUtils.replace(
-          queryResponseTemplate,
-          "%%DATASOURCE%%",
-          fullDatasourceName
+              queryResponseTemplate,
+              "%%DATASOURCE%%",
+              fullDatasourceName
       );
 
       this.queryHelper.testQueriesFromString(queryResponseTemplate, 2);
@@ -158,11 +161,11 @@ public class ITUnionQueryTest extends AbstractIndexerTest
       for (int i = 0; i < numTasks; i++) {
         final int taskNum = i;
         ITRetryUtil.retryUntil(
-            () -> coordinator.areSegmentsLoaded(fullDatasourceName + taskNum),
-            true,
-            10000,
-            10,
-            "Real-time generated segments loaded"
+                () -> coordinator.areSegmentsLoaded(fullDatasourceName + taskNum),
+                true,
+                10000,
+                10,
+                "Real-time generated segments loaded"
         );
       }
       // run queries on historical nodes
@@ -205,29 +208,29 @@ public class ITUnionQueryTest extends AbstractIndexerTest
 
       LOG.info("Checking worker /status/health for [%s]", host);
       ITRetryUtil.retryUntilTrue(
-          () -> {
-            try {
-              StatusResponseHolder response = httpClient.go(
-                  new Request(HttpMethod.GET, new URL(StringUtils.format("https://%s/status/health", host))),
-                  StatusResponseHandler.getInstance()
-              ).get();
-              return response.getStatus().equals(HttpResponseStatus.OK);
-            }
-            catch (Throwable e) {
-              LOG.error(e, "");
-              return false;
-            }
-          },
-          StringUtils.format("Checking /status/health for worker [%s]", host)
+              () -> {
+                try {
+                  StatusResponseHolder response = httpClient.go(
+                          new Request(HttpMethod.GET, new URL(StringUtils.format("https://%s/status/health", host))),
+                          StatusResponseHandler.getInstance()
+                  ).get();
+                  return response.getStatus().equals(HttpResponseStatus.OK);
+                }
+                catch (Throwable e) {
+                  LOG.error(e, "");
+                  return false;
+                }
+              },
+              StringUtils.format("Checking /status/health for worker [%s]", host)
       );
       LOG.info("Finished checking worker /status/health for [%s], success", host);
 
       EventReceiverFirehoseTestClient client = new EventReceiverFirehoseTestClient(
-          host,
-          EVENT_RECEIVER_SERVICE_PREFIX + id,
-          jsonMapper,
-          httpClient,
-          smileMapper
+              host,
+              EVENT_RECEIVER_SERVICE_PREFIX + id,
+              jsonMapper,
+              httpClient,
+              smileMapper
       );
       client.postEventsFromFile(UNION_DATA_FILE);
     }

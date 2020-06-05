@@ -24,18 +24,22 @@ import org.apache.druid.indexer.partitions.HashedPartitionsSpec;
 import org.apache.druid.indexer.partitions.PartitionsSpec;
 import org.apache.druid.indexer.partitions.SingleDimensionPartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.Closeable;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-@Test(groups = TestNGGroup.PERFECT_ROLLUP_PARALLEL_BATCH_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.PERFECT_ROLLUP_PARALLEL_BATCH_INDEX;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Tag(PERFECT_ROLLUP_PARALLEL_BATCH_INDEX)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITPerfectRollupParallelIndexTest extends AbstractITBatchIndexTest
 {
   // The task specs here use the MaxSizeSplitHintSpec with maxSplitSize of 1. This is to create splits per file.
@@ -47,37 +51,36 @@ public class ITPerfectRollupParallelIndexTest extends AbstractITBatchIndexTest
   private static final String INDEX_DRUID_INPUT_SOURCE_DATASOURCE = "wikipedia_parallel_druid_input_source_index_test";
   private static final String INDEX_DRUID_INPUT_SOURCE_TASK = "/indexer/wikipedia_parallel_druid_input_source_index_task.json";
 
-  @DataProvider
-  public static Object[][] resources()
-  {
-    return new Object[][]{
-        {new HashedPartitionsSpec(null, 2, null)},
-        {new SingleDimensionPartitionsSpec(2, null, "namespace", false)}
-    };
+  public static Stream<Arguments> resources() throws Exception {
+    return Stream.of(
+            Arguments.of(new HashedPartitionsSpec(null, 2, null)),
+            Arguments.of(new SingleDimensionPartitionsSpec(2, null, "namespace", false))
+    );
   }
 
-  @Test(dataProvider = "resources")
-  public void testIndexData(PartitionsSpec partitionsSpec) throws Exception
+  @ParameterizedTest
+  @MethodSource("resources")
+  void testIndexData(PartitionsSpec partitionsSpec) throws Exception
   {
     try (
-        final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored2 = unloader(INDEX_INGEST_SEGMENT_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored3 = unloader(INDEX_DRUID_INPUT_SOURCE_DATASOURCE + config.getExtraDatasourceNameSuffix())
+            final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored2 = unloader(INDEX_INGEST_SEGMENT_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored3 = unloader(INDEX_DRUID_INPUT_SOURCE_DATASOURCE + config.getExtraDatasourceNameSuffix())
     ) {
       boolean forceGuaranteedRollup = partitionsSpec.isForceGuaranteedRollupCompatible();
-      Assert.assertTrue(forceGuaranteedRollup, "parititionSpec does not support perfect rollup");
+      assertTrue(forceGuaranteedRollup, "parititionSpec does not support perfect rollup");
 
       final Function<String, String> rollupTransform = spec -> {
         try {
           spec = StringUtils.replace(
-              spec,
-              "%%FORCE_GUARANTEED_ROLLUP%%",
-              Boolean.toString(true)
+                  spec,
+                  "%%FORCE_GUARANTEED_ROLLUP%%",
+                  Boolean.toString(true)
           );
           return StringUtils.replace(
-              spec,
-              "%%PARTITIONS_SPEC%%",
-              jsonMapper.writeValueAsString(partitionsSpec)
+                  spec,
+                  "%%PARTITIONS_SPEC%%",
+                  jsonMapper.writeValueAsString(partitionsSpec)
           );
         }
         catch (JsonProcessingException e) {
@@ -86,30 +89,30 @@ public class ITPerfectRollupParallelIndexTest extends AbstractITBatchIndexTest
       };
 
       doIndexTest(
-          INDEX_DATASOURCE,
-          INDEX_TASK,
-          rollupTransform,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              INDEX_DATASOURCE,
+              INDEX_TASK,
+              rollupTransform,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
 
       doReindexTest(
-          INDEX_DATASOURCE,
-          INDEX_INGEST_SEGMENT_DATASOURCE,
-          rollupTransform,
-          INDEX_INGEST_SEGMENT_TASK,
-          INDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              INDEX_INGEST_SEGMENT_DATASOURCE,
+              rollupTransform,
+              INDEX_INGEST_SEGMENT_TASK,
+              INDEX_QUERIES_RESOURCE
       );
 
       // with DruidInputSource instead of IngestSegmentFirehose
       doReindexTest(
-          INDEX_DATASOURCE,
-          INDEX_DRUID_INPUT_SOURCE_DATASOURCE,
-          rollupTransform,
-          INDEX_DRUID_INPUT_SOURCE_TASK,
-          INDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              INDEX_DRUID_INPUT_SOURCE_DATASOURCE,
+              rollupTransform,
+              INDEX_DRUID_INPUT_SOURCE_TASK,
+              INDEX_QUERIES_RESOURCE
       );
     }
   }

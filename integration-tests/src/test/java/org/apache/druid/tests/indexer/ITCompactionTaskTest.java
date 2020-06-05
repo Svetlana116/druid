@@ -25,12 +25,12 @@ import org.apache.druid.java.util.common.ISE;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.testing.IntegrationTestingConfig;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -39,8 +39,12 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@Test(groups = {TestNGGroup.OTHER_INDEX, TestNGGroup.QUICKSTART_COMPATIBLE})
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.OTHER_INDEX;
+import static org.apache.druid.tests.TestNGGroup.QUICKSTART_COMPATIBLE;
+
+@Tag(OTHER_INDEX)
+@Tag( QUICKSTART_COMPATIBLE)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITCompactionTaskTest extends AbstractIndexerTest
 {
   private static final Logger LOG = new Logger(ITCompactionTaskTest.class);
@@ -57,20 +61,20 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
 
   private String fullDatasourceName;
 
-  @BeforeMethod
-  public void setFullDatasourceName(Method method)
+  @BeforeEach
+  void setFullDatasourceName(Method method)
   {
     fullDatasourceName = INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix() + "-" + method.getName();
   }
 
   @Test
-  public void testCompaction() throws Exception
+  void testCompaction() throws Exception
   {
     loadDataAndCompact(INDEX_TASK, INDEX_QUERIES_RESOURCE);
   }
 
   @Test
-  public void testCompactionWithTimestampDimension() throws Exception
+  void testCompactionWithTimestampDimension() throws Exception
   {
     loadDataAndCompact(INDEX_TASK_WITH_TIMESTAMP, INDEX_QUERIES_RESOURCE);
   }
@@ -91,9 +95,9 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
       }
 
       queryResponseTemplate = StringUtils.replace(
-          queryResponseTemplate,
-          "%%DATASOURCE%%",
-          fullDatasourceName
+              queryResponseTemplate,
+              "%%DATASOURCE%%",
+              fullDatasourceName
       );
 
 
@@ -116,8 +120,8 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
     indexer.waitUntilTaskCompletes(taskID);
 
     ITRetryUtil.retryUntilTrue(
-        () -> coordinator.areSegmentsLoaded(fullDatasourceName),
-        "Segment Load"
+            () -> coordinator.areSegmentsLoaded(fullDatasourceName),
+            "Segment Load"
     );
   }
 
@@ -131,34 +135,34 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
     indexer.waitUntilTaskCompletes(taskID);
 
     ITRetryUtil.retryUntilTrue(
-        () -> coordinator.areSegmentsLoaded(fullDatasourceName),
-        "Segment Compaction"
+            () -> coordinator.areSegmentsLoaded(fullDatasourceName),
+            "Segment Compaction"
     );
   }
 
   private void checkCompactionFinished(int numExpectedSegments)
   {
     ITRetryUtil.retryUntilTrue(
-        () -> {
-          int metadataSegmentCount = coordinator.getSegments(fullDatasourceName).size();
-          LOG.info("Current metadata segment count: %d, expected: %d", metadataSegmentCount, numExpectedSegments);
-          return metadataSegmentCount == numExpectedSegments;
-        },
-        "Compaction segment count check"
+            () -> {
+              int metadataSegmentCount = coordinator.getSegments(fullDatasourceName).size();
+              LOG.info("Current metadata segment count: %d, expected: %d", metadataSegmentCount, numExpectedSegments);
+              return metadataSegmentCount == numExpectedSegments;
+            },
+            "Compaction segment count check"
     );
   }
 
   private void checkCompactionIntervals(List<String> expectedIntervals)
   {
     ITRetryUtil.retryUntilTrue(
-        () -> {
-          final List<String> intervalsAfterCompaction = coordinator.getSegmentIntervals(fullDatasourceName);
-          intervalsAfterCompaction.sort(null);
-          System.out.println("AFTER: " + intervalsAfterCompaction);
-          System.out.println("EXPECTED: " + expectedIntervals);
-          return intervalsAfterCompaction.equals(expectedIntervals);
-        },
-        "Compaction interval check"
+            () -> {
+              final List<String> intervalsAfterCompaction = coordinator.getSegmentIntervals(fullDatasourceName);
+              intervalsAfterCompaction.sort(null);
+              System.out.println("AFTER: " + intervalsAfterCompaction);
+              System.out.println("EXPECTED: " + expectedIntervals);
+              return intervalsAfterCompaction.equals(expectedIntervals);
+            },
+            "Compaction interval check"
     );
   }
 }

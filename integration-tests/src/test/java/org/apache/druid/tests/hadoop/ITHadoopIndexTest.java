@@ -25,16 +25,21 @@ import org.apache.druid.indexer.partitions.HashedPartitionsSpec;
 import org.apache.druid.indexer.partitions.SingleDimensionPartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.logger.Logger;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.apache.druid.tests.indexer.AbstractITBatchIndexTest;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.Closeable;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static org.apache.druid.tests.TestNGGroup.HDFS_DEEP_STORAGE;
 
 /**
  * IMPORTANT:
@@ -49,8 +54,8 @@ import java.util.function.Function;
  *    integration-tests/docker/environment-configs/override-examples/hdfs for env vars to provide.
  * 3) Run the test with -Dstart.hadoop.docker=true -Dextra.datasource.name.suffix='' in the mvn command
  */
-@Test(groups = TestNGGroup.HDFS_DEEP_STORAGE)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@Tag(HDFS_DEEP_STORAGE)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITHadoopIndexTest extends AbstractITBatchIndexTest
 {
   private static final Logger LOG = new Logger(ITHadoopIndexTest.class);
@@ -67,35 +72,34 @@ public class ITHadoopIndexTest extends AbstractITBatchIndexTest
   private static final String REINDEX_QUERIES_RESOURCE = "/indexer/wikipedia_reindex_queries.json";
   private static final String REINDEX_DATASOURCE = "wikipedia_hadoop_reindex_test";
 
-  @DataProvider
-  public static Object[][] resources()
+  public static Stream<Arguments> resources()
   {
-    return new Object[][]{
-        {new HashedPartitionsSpec(3, null, null)},
-        {new HashedPartitionsSpec(null, 3, ImmutableList.of("page"))},
-        {new HashedPartitionsSpec(null, 3, ImmutableList.of("page", "user"))},
-        {new SingleDimensionPartitionsSpec(1000, null, null, false)},
-        {new SingleDimensionPartitionsSpec(1000, null, "page", false)},
-        {new SingleDimensionPartitionsSpec(1000, null, null, true)},
+    return Stream.of(
+            Arguments.of(new HashedPartitionsSpec(3, null, null)),
+            Arguments.of(new HashedPartitionsSpec(null, 3, ImmutableList.of("page"))),
+            Arguments.of(new HashedPartitionsSpec(null, 3, ImmutableList.of("page", "user"))),
+            Arguments.of(new SingleDimensionPartitionsSpec(1000, null, null, false)),
+            Arguments.of(new SingleDimensionPartitionsSpec(1000, null, "page", false)),
+            Arguments.of(new SingleDimensionPartitionsSpec(1000, null, null, true)));
 
-        //{new HashedPartitionsSpec(null, 3, null)} // this results in a bug where the segments have 0 rows
-    };
+    //{new HashedPartitionsSpec(null, 3, null)} // this results in a bug where the segments have 0 rows
+
   }
 
   @Test
-  public void testLegacyITHadoopIndexTest() throws Exception
+  void testLegacyITHadoopIndexTest() throws Exception
   {
     String indexDatasource = BATCH_DATASOURCE + "_" + UUID.randomUUID();
     try (
-        final Closeable ignored0 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored0 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
     ) {
       final Function<String, String> specPathsTransform = spec -> {
         try {
           String path = "/batch_index/tsv";
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_PATHS%%",
-              path
+                  spec,
+                  "%%INPUT_PATHS%%",
+                  path
           );
 
           return spec;
@@ -106,39 +110,40 @@ public class ITHadoopIndexTest extends AbstractITBatchIndexTest
       };
 
       doIndexTest(
-          indexDatasource,
-          BATCH_TASK,
-          specPathsTransform,
-          BATCH_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              indexDatasource,
+              BATCH_TASK,
+              specPathsTransform,
+              BATCH_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
     }
   }
 
-  @Test(dataProvider = "resources")
-  public void testIndexData(DimensionBasedPartitionsSpec partitionsSpec) throws Exception
+  @ParameterizedTest
+  @MethodSource("resources")
+  void testIndexData(DimensionBasedPartitionsSpec partitionsSpec) throws Exception
   {
     String indexDatasource = INDEX_DATASOURCE + "_" + UUID.randomUUID();
     String reindexDatasource = REINDEX_DATASOURCE + "_" + UUID.randomUUID();
 
     try (
-        final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored1 = unloader(indexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix());
     ) {
       final Function<String, String> specPathsTransform = spec -> {
         try {
           String path = "/batch_index/json";
           spec = StringUtils.replace(
-              spec,
-              "%%INPUT_PATHS%%",
-              path
+                  spec,
+                  "%%INPUT_PATHS%%",
+                  path
           );
           spec = StringUtils.replace(
-              spec,
-              "%%PARTITIONS_SPEC%%",
-              jsonMapper.writeValueAsString(partitionsSpec)
+                  spec,
+                  "%%PARTITIONS_SPEC%%",
+                  jsonMapper.writeValueAsString(partitionsSpec)
           );
 
           return spec;
@@ -149,20 +154,20 @@ public class ITHadoopIndexTest extends AbstractITBatchIndexTest
       };
 
       doIndexTest(
-          indexDatasource,
-          INDEX_TASK,
-          specPathsTransform,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              indexDatasource,
+              INDEX_TASK,
+              specPathsTransform,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
 
       doReindexTest(
-          indexDatasource,
-          reindexDatasource,
-          REINDEX_TASK,
-          REINDEX_QUERIES_RESOURCE
+              indexDatasource,
+              reindexDatasource,
+              REINDEX_TASK,
+              REINDEX_QUERIES_RESOURCE
       );
     }
   }

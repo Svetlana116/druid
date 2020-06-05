@@ -29,26 +29,21 @@ import org.apache.druid.java.util.common.ISE;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.lifecycle.Lifecycle;
 import org.apache.druid.java.util.common.logger.Logger;
-import org.apache.druid.java.util.http.client.CredentialedHttpClient;
-import org.apache.druid.java.util.http.client.HttpClient;
-import org.apache.druid.java.util.http.client.HttpClientConfig;
-import org.apache.druid.java.util.http.client.HttpClientInit;
-import org.apache.druid.java.util.http.client.Request;
+import org.apache.druid.java.util.http.client.*;
 import org.apache.druid.java.util.http.client.auth.BasicCredentials;
 import org.apache.druid.java.util.http.client.response.StatusResponseHandler;
 import org.apache.druid.java.util.http.client.response.StatusResponseHolder;
 import org.apache.druid.server.security.TLSCertificateChecker;
 import org.apache.druid.server.security.TLSUtils;
 import org.apache.druid.testing.IntegrationTestingConfig;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITTLSCertificateChecker;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.joda.time.Duration;
-import org.testng.Assert;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -56,8 +51,11 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URL;
 
-@Test(groups = TestNGGroup.SECURITY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.SECURITY;
+import static org.junit.jupiter.api.Assertions.*;
+
+@Tag(SECURITY)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITTLSTest
 {
   private static final Logger LOG = new Logger(ITTLSTest.class);
@@ -88,12 +86,12 @@ public class ITTLSTest
 
 
   @Test
-  public void testPlaintextAccess()
+   void testPlaintextAccess()
   {
     LOG.info("---------Testing resource access without TLS---------");
     HttpClient adminClient = new CredentialedHttpClient(
-        new BasicCredentials("admin", "priest"),
-        httpClient
+            new BasicCredentials("admin", "priest"),
+            httpClient
     );
     makeRequest(adminClient, HttpMethod.GET, config.getCoordinatorUrl() + "/status", null);
     makeRequest(adminClient, HttpMethod.GET, config.getIndexerUrl() + "/status", null);
@@ -105,12 +103,12 @@ public class ITTLSTest
   }
 
   @Test
-  public void testTLSNodeAccess()
+   void testTLSNodeAccess()
   {
     LOG.info("---------Testing resource access with TLS enabled---------");
     HttpClient adminClient = new CredentialedHttpClient(
-        new BasicCredentials("admin", "priest"),
-        httpClient
+            new BasicCredentials("admin", "priest"),
+            httpClient
     );
     makeRequest(adminClient, HttpMethod.GET, config.getCoordinatorTLSUrl() + "/status", null);
     makeRequest(adminClient, HttpMethod.GET, config.getIndexerTLSUrl() + "/status", null);
@@ -122,12 +120,12 @@ public class ITTLSTest
   }
 
   @Test
-  public void testTLSNodeAccessWithIntermediate()
+   void testTLSNodeAccessWithIntermediate()
   {
     LOG.info("---------Testing TLS resource access with 3-part cert chain---------");
     HttpClient intermediateCertClient = makeCustomHttpClient(
-        "client_tls/intermediate_ca_client.jks",
-        "intermediate_ca_client"
+            "client_tls/intermediate_ca_client.jks",
+            "intermediate_ca_client"
     );
     makeRequest(intermediateCertClient, HttpMethod.GET, config.getCoordinatorTLSUrl() + "/status", null);
     makeRequest(intermediateCertClient, HttpMethod.GET, config.getIndexerTLSUrl() + "/status", null);
@@ -139,7 +137,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithNoCert()
+   void checkAccessWithNoCert()
   {
     LOG.info("---------Testing TLS resource access without a certificate---------");
     HttpClient certlessClient = makeCertlessClient();
@@ -157,8 +155,8 @@ public class ITTLSTest
   {
     LOG.info("---------Testing TLS resource access when client certificate has non-matching hostnames---------");
     HttpClient wrongHostnameClient = makeCustomHttpClient(
-        "client_tls/invalid_hostname_client.jks",
-        "invalid_hostname_client"
+            "client_tls/invalid_hostname_client.jks",
+            "invalid_hostname_client"
     );
     checkFailedAccessWrongHostname(wrongHostnameClient, HttpMethod.GET, config.getCoordinatorTLSUrl());
     checkFailedAccessWrongHostname(wrongHostnameClient, HttpMethod.GET, config.getIndexerTLSUrl());
@@ -174,8 +172,8 @@ public class ITTLSTest
   {
     LOG.info("---------Testing TLS resource access when client certificate is signed by a non-trusted root CA---------");
     HttpClient wrongRootClient = makeCustomHttpClient(
-        "client_tls/client_another_root.jks",
-        "druid_another_root"
+            "client_tls/client_another_root.jks",
+            "druid_another_root"
     );
     checkFailedAccessWrongRoot(wrongRootClient, HttpMethod.GET, config.getCoordinatorTLSUrl());
     checkFailedAccessWrongRoot(wrongRootClient, HttpMethod.GET, config.getIndexerTLSUrl());
@@ -191,8 +189,8 @@ public class ITTLSTest
   {
     LOG.info("---------Testing TLS resource access when client certificate has been revoked---------");
     HttpClient revokedClient = makeCustomHttpClient(
-        "client_tls/revoked_client.jks",
-        "revoked_druid"
+            "client_tls/revoked_client.jks",
+            "revoked_druid"
     );
     checkFailedAccessRevoked(revokedClient, HttpMethod.GET, config.getCoordinatorTLSUrl());
     checkFailedAccessRevoked(revokedClient, HttpMethod.GET, config.getIndexerTLSUrl());
@@ -208,8 +206,8 @@ public class ITTLSTest
   {
     LOG.info("---------Testing TLS resource access when client certificate has expired---------");
     HttpClient expiredClient = makeCustomHttpClient(
-        "client_tls/expired_client.jks",
-        "expired_client"
+            "client_tls/expired_client.jks",
+            "expired_client"
     );
     checkFailedAccessExpired(expiredClient, HttpMethod.GET, config.getCoordinatorTLSUrl());
     checkFailedAccessExpired(expiredClient, HttpMethod.GET, config.getIndexerTLSUrl());
@@ -224,10 +222,10 @@ public class ITTLSTest
   public void checkAccessWithNotCASignedCert()
   {
     LOG.info(
-        "---------Testing TLS resource access when client certificate is signed by a non-CA intermediate cert---------");
+            "---------Testing TLS resource access when client certificate is signed by a non-CA intermediate cert---------");
     HttpClient notCAClient = makeCustomHttpClient(
-        "client_tls/invalid_ca_client.jks",
-        "invalid_ca_client"
+            "client_tls/invalid_ca_client.jks",
+            "invalid_ca_client"
     );
     checkFailedAccessNotCA(notCAClient, HttpMethod.GET, config.getCoordinatorTLSUrl());
     checkFailedAccessNotCA(notCAClient, HttpMethod.GET, config.getIndexerTLSUrl());
@@ -243,9 +241,9 @@ public class ITTLSTest
   {
     LOG.info("---------Testing TLS resource access with custom certificate checks---------");
     HttpClient wrongHostnameClient = makeCustomHttpClient(
-        "client_tls/invalid_hostname_client.jks",
-        "invalid_hostname_client",
-        new ITTLSCertificateChecker()
+            "client_tls/invalid_hostname_client.jks",
+            "invalid_hostname_client",
+            new ITTLSCertificateChecker()
     );
 
     checkFailedAccessWrongHostname(httpClient, HttpMethod.GET, config.getCustomCertCheckRouterTLSUrl());
@@ -253,13 +251,13 @@ public class ITTLSTest
     makeRequest(wrongHostnameClient, HttpMethod.GET, config.getCustomCertCheckRouterTLSUrl() + "/status", null);
 
     checkFailedAccess(
-        wrongHostnameClient,
-        HttpMethod.POST,
-        config.getCustomCertCheckRouterTLSUrl() + "/druid/v2",
-        "Custom cert check",
-        ISE.class,
-        "Error while making request to url[https://127.0.0.1:9091/druid/v2] status[400 Bad Request] content[{\"error\":\"No content to map due to end-of-input",
-        true
+            wrongHostnameClient,
+            HttpMethod.POST,
+            config.getCustomCertCheckRouterTLSUrl() + "/druid/v2",
+            "Custom cert check",
+            ISE.class,
+            "Error while making request to url[https://127.0.0.1:9091/druid/v2] status[400 Bad Request] content[{\"error\":\"No content to map due to end-of-input",
+            true
     );
 
     makeRequest(wrongHostnameClient, HttpMethod.GET, config.getCustomCertCheckRouterTLSUrl() + "/druid/coordinator/v1/leader", null);
@@ -268,94 +266,94 @@ public class ITTLSTest
   private void checkFailedAccessNoCert(HttpClient httpClient, HttpMethod method, String url)
   {
     checkFailedAccess(
-        httpClient,
-        method,
-        url + "/status",
-        "Certless",
-        SSLException.class,
-        "Received fatal alert: bad_certificate",
-        false
+            httpClient,
+            method,
+            url + "/status",
+            "Certless",
+            SSLException.class,
+            "Received fatal alert: bad_certificate",
+            false
     );
   }
 
   private void checkFailedAccessWrongHostname(HttpClient httpClient, HttpMethod method, String url)
   {
     checkFailedAccess(
-        httpClient,
-        method,
-        url + "/status",
-        "Wrong hostname",
-        SSLException.class,
-        "Received fatal alert: certificate_unknown",
-        false
+            httpClient,
+            method,
+            url + "/status",
+            "Wrong hostname",
+            SSLException.class,
+            "Received fatal alert: certificate_unknown",
+            false
     );
   }
 
   private void checkFailedAccessWrongRoot(HttpClient httpClient, HttpMethod method, String url)
   {
     checkFailedAccess(
-        httpClient,
-        method,
-        url + "/status",
-        "Wrong root cert",
-        SSLException.class,
-        "Received fatal alert: certificate_unknown",
-        false
+            httpClient,
+            method,
+            url + "/status",
+            "Wrong root cert",
+            SSLException.class,
+            "Received fatal alert: certificate_unknown",
+            false
     );
   }
 
   private void checkFailedAccessRevoked(HttpClient httpClient, HttpMethod method, String url)
   {
     checkFailedAccess(
-        httpClient,
-        method,
-        url + "/status",
-        "Revoked cert",
-        SSLException.class,
-        "Received fatal alert: certificate_unknown",
-        false
+            httpClient,
+            method,
+            url + "/status",
+            "Revoked cert",
+            SSLException.class,
+            "Received fatal alert: certificate_unknown",
+            false
     );
   }
 
   private void checkFailedAccessExpired(HttpClient httpClient, HttpMethod method, String url)
   {
     checkFailedAccess(
-        httpClient,
-        method,
-        url + "/status",
-        "Expired cert",
-        SSLException.class,
-        "Received fatal alert: certificate_unknown",
-        false
+            httpClient,
+            method,
+            url + "/status",
+            "Expired cert",
+            SSLException.class,
+            "Received fatal alert: certificate_unknown",
+            false
     );
   }
 
   private void checkFailedAccessNotCA(HttpClient httpClient, HttpMethod method, String url)
   {
     checkFailedAccess(
-        httpClient,
-        method,
-        url + "/status",
-        "Cert signed by non-CA",
-        SSLException.class,
-        "Received fatal alert: certificate_unknown",
-        false
+            httpClient,
+            method,
+            url + "/status",
+            "Cert signed by non-CA",
+            SSLException.class,
+            "Received fatal alert: certificate_unknown",
+            false
     );
   }
 
   private HttpClientConfig.Builder getHttpClientConfigBuilder(SSLContext sslContext)
   {
     return HttpClientConfig
-        .builder()
-        .withNumConnections(httpClientConfig.getNumConnections())
-        .withReadTimeout(httpClientConfig.getReadTimeout())
-        .withWorkerCount(httpClientConfig.getNumMaxThreads())
-        .withCompressionCodec(
-            HttpClientConfig.CompressionCodec.valueOf(StringUtils.toUpperCase(httpClientConfig.getCompressionCodec()))
-        )
-        .withUnusedConnectionTimeoutDuration(httpClientConfig.getUnusedConnectionTimeout())
-        .withSslHandshakeTimeout(SSL_HANDSHAKE_TIMEOUT)
-        .withSslContext(sslContext);
+            .builder()
+            .withNumConnections(httpClientConfig.getNumConnections())
+            .withReadTimeout(httpClientConfig.getReadTimeout())
+            .withWorkerCount(httpClientConfig.getNumMaxThreads())
+            .withCompressionCodec(
+                    HttpClientConfig.CompressionCodec.valueOf(StringUtils.toUpperCase(httpClientConfig.getCompressionCodec()))
+            )
+            .withUnusedConnectionTimeoutDuration(httpClientConfig.getUnusedConnectionTimeout())
+            .withSslHandshakeTimeout(SSL_HANDSHAKE_TIMEOUT)
+            .withSslContext(sslContext);
   }
 
   private HttpClient makeCustomHttpClient(String keystorePath, String certAlias)
@@ -364,38 +362,38 @@ public class ITTLSTest
   }
 
   private HttpClient makeCustomHttpClient(
-      String keystorePath,
-      String certAlias,
-      TLSCertificateChecker certificateChecker
+          String keystorePath,
+          String certAlias,
+          TLSCertificateChecker certificateChecker
   )
   {
     SSLContext intermediateClientSSLContext = new TLSUtils.ClientSSLContextBuilder()
-        .setProtocol(sslClientConfig.getProtocol())
-        .setTrustStoreType(sslClientConfig.getTrustStoreType())
-        .setTrustStorePath(sslClientConfig.getTrustStorePath())
-        .setTrustStoreAlgorithm(sslClientConfig.getTrustStoreAlgorithm())
-        .setTrustStorePasswordProvider(sslClientConfig.getTrustStorePasswordProvider())
-        .setKeyStoreType(sslClientConfig.getKeyStoreType())
-        .setKeyStorePath(keystorePath)
-        .setKeyStoreAlgorithm(sslClientConfig.getKeyManagerFactoryAlgorithm())
-        .setCertAlias(certAlias)
-        .setKeyStorePasswordProvider(sslClientConfig.getKeyStorePasswordProvider())
-        .setKeyManagerFactoryPasswordProvider(sslClientConfig.getKeyManagerPasswordProvider())
-        .setCertificateChecker(certificateChecker)
-        .build();
+            .setProtocol(sslClientConfig.getProtocol())
+            .setTrustStoreType(sslClientConfig.getTrustStoreType())
+            .setTrustStorePath(sslClientConfig.getTrustStorePath())
+            .setTrustStoreAlgorithm(sslClientConfig.getTrustStoreAlgorithm())
+            .setTrustStorePasswordProvider(sslClientConfig.getTrustStorePasswordProvider())
+            .setKeyStoreType(sslClientConfig.getKeyStoreType())
+            .setKeyStorePath(keystorePath)
+            .setKeyStoreAlgorithm(sslClientConfig.getKeyManagerFactoryAlgorithm())
+            .setCertAlias(certAlias)
+            .setKeyStorePasswordProvider(sslClientConfig.getKeyStorePasswordProvider())
+            .setKeyManagerFactoryPasswordProvider(sslClientConfig.getKeyManagerPasswordProvider())
+            .setCertificateChecker(certificateChecker)
+            .build();
 
     final HttpClientConfig.Builder builder = getHttpClientConfigBuilder(intermediateClientSSLContext);
 
     final Lifecycle lifecycle = new Lifecycle();
 
     HttpClient client = HttpClientInit.createClient(
-        builder.build(),
-        lifecycle
+            builder.build(),
+            lifecycle
     );
 
     HttpClient adminClient = new CredentialedHttpClient(
-        new BasicCredentials("admin", "priest"),
-        client
+            new BasicCredentials("admin", "priest"),
+            client
     );
     return adminClient;
   }
@@ -403,38 +401,38 @@ public class ITTLSTest
   private HttpClient makeCertlessClient()
   {
     SSLContext certlessClientSSLContext = new TLSUtils.ClientSSLContextBuilder()
-        .setProtocol(sslClientConfig.getProtocol())
-        .setTrustStoreType(sslClientConfig.getTrustStoreType())
-        .setTrustStorePath(sslClientConfig.getTrustStorePath())
-        .setTrustStoreAlgorithm(sslClientConfig.getTrustStoreAlgorithm())
-        .setTrustStorePasswordProvider(sslClientConfig.getTrustStorePasswordProvider())
-        .setCertificateChecker(certificateChecker)
-        .build();
+            .setProtocol(sslClientConfig.getProtocol())
+            .setTrustStoreType(sslClientConfig.getTrustStoreType())
+            .setTrustStorePath(sslClientConfig.getTrustStorePath())
+            .setTrustStoreAlgorithm(sslClientConfig.getTrustStoreAlgorithm())
+            .setTrustStorePasswordProvider(sslClientConfig.getTrustStorePasswordProvider())
+            .setCertificateChecker(certificateChecker)
+            .build();
 
     final HttpClientConfig.Builder builder = getHttpClientConfigBuilder(certlessClientSSLContext);
 
     final Lifecycle lifecycle = new Lifecycle();
 
     HttpClient client = HttpClientInit.createClient(
-        builder.build(),
-        lifecycle
+            builder.build(),
+            lifecycle
     );
 
     HttpClient adminClient = new CredentialedHttpClient(
-        new BasicCredentials("admin", "priest"),
-        client
+            new BasicCredentials("admin", "priest"),
+            client
     );
     return adminClient;
   }
 
   private void checkFailedAccess(
-      HttpClient httpClient,
-      HttpMethod method,
-      String url,
-      String clientDesc,
-      Class expectedException,
-      String expectedExceptionMsg,
-      boolean useContainsMsgCheck
+          HttpClient httpClient,
+          HttpMethod method,
+          String url,
+          String clientDesc,
+          Class expectedException,
+          String expectedExceptionMsg,
+          boolean useContainsMsgCheck
   )
   {
     int retries = 0;
@@ -446,11 +444,11 @@ public class ITTLSTest
         Throwable rootCause = Throwables.getRootCause(re);
 
         if (rootCause instanceof IOException && ("Broken pipe".equals(rootCause.getMessage())
-                                                 || "Connection reset by peer".contains(rootCause.getMessage()))) {
+                || "Connection reset by peer".contains(rootCause.getMessage()))) {
           if (retries > MAX_CONNECTION_EXCEPTION_RETRIES) {
-            Assert.fail(StringUtils.format(
-                "Broken pipe / connection reset retries exhausted, test failed, did not get %s.",
-                expectedException
+            fail(StringUtils.format(
+                    "Broken pipe / connection reset retries exhausted, test failed, did not get %s.",
+                    expectedException
             ));
           } else {
             retries += 1;
@@ -458,24 +456,24 @@ public class ITTLSTest
           }
         }
 
-        Assert.assertTrue(
-            expectedException.isInstance(rootCause),
-            StringUtils.format("Expected %s but found %s instead.", expectedException, Throwables.getStackTraceAsString(rootCause))
+        assertTrue(
+                expectedException.isInstance(rootCause),
+                StringUtils.format("Expected %s but found %s instead.", expectedException, Throwables.getStackTraceAsString(rootCause))
         );
 
         if (useContainsMsgCheck) {
-          Assert.assertTrue(rootCause.getMessage().contains(expectedExceptionMsg));
+          assertTrue(rootCause.getMessage().contains(expectedExceptionMsg));
         } else {
-          Assert.assertEquals(
-              rootCause.getMessage(),
-              expectedExceptionMsg
+          assertEquals(
+                  rootCause.getMessage(),
+                  expectedExceptionMsg
           );
         }
 
         LOG.info("%s client [%s] request failed as expected when accessing [%s]", clientDesc, method, url);
         return;
       }
-      Assert.fail(StringUtils.format("Test failed, did not get %s.", expectedException));
+      fail(StringUtils.format("Test failed, did not get %s.", expectedException));
     }
   }
 
@@ -485,11 +483,11 @@ public class ITTLSTest
   }
 
   private StatusResponseHolder makeRequest(
-      HttpClient httpClient,
-      HttpMethod method,
-      String url,
-      byte[] content,
-      int maxRetries
+          HttpClient httpClient,
+          HttpMethod method,
+          String url,
+          byte[] content,
+          int maxRetries
   )
   {
     try {
@@ -503,16 +501,16 @@ public class ITTLSTest
 
       while (true) {
         response = httpClient.go(
-            request,
-            StatusResponseHandler.getInstance()
+                request,
+                StatusResponseHandler.getInstance()
         ).get();
 
         if (!response.getStatus().equals(HttpResponseStatus.OK)) {
           String errMsg = StringUtils.format(
-              "Error while making request to url[%s] status[%s] content[%s]",
-              url,
-              response.getStatus(),
-              response.getContent()
+                  "Error while making request to url[%s] status[%s] content[%s]",
+                  url,
+                  response.getStatus(),
+                  response.getContent()
           );
           if (retryCount > maxRetries) {
             throw new ISE(errMsg);

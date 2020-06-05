@@ -23,18 +23,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.indexer.partitions.PartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.Closeable;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-@Test(groups = TestNGGroup.BATCH_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+@Tag(BATCH_INDEX)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTest
 {
   // The task specs here use the MaxSizeSplitHintSpec with maxSplitSize of 1. This is to create splits per file.
@@ -48,36 +52,35 @@ public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTes
   private static final String INDEX_DRUID_INPUT_SOURCE_DATASOURCE = "wikipedia_parallel_druid_input_source_index_test";
   private static final String INDEX_DRUID_INPUT_SOURCE_TASK = "/indexer/wikipedia_parallel_druid_input_source_index_task.json";
 
-  @DataProvider
-  public static Object[][] resources()
-  {
-    return new Object[][]{
-        {new DynamicPartitionsSpec(null, null)}
-    };
+  public static Stream<Arguments> resources ()  {
+    return Stream.of(
+            Arguments.of(new DynamicPartitionsSpec(null, null)
+            ));
   }
 
-  @Test(dataProvider = "resources")
+  @ParameterizedTest
+  @MethodSource("resources")
   public void testIndexData(PartitionsSpec partitionsSpec) throws Exception
   {
     try (
-        final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored2 = unloader(INDEX_INGEST_SEGMENT_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored3 = unloader(INDEX_DRUID_INPUT_SOURCE_DATASOURCE + config.getExtraDatasourceNameSuffix())
+            final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored2 = unloader(INDEX_INGEST_SEGMENT_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored3 = unloader(INDEX_DRUID_INPUT_SOURCE_DATASOURCE + config.getExtraDatasourceNameSuffix())
     ) {
       boolean forceGuaranteedRollup = partitionsSpec.isForceGuaranteedRollupCompatible();
-      Assert.assertFalse(forceGuaranteedRollup, "parititionSpec does not support best-effort rollup");
+      assertFalse(forceGuaranteedRollup, "parititionSpec does not support best-effort rollup");
 
       final Function<String, String> rollupTransform = spec -> {
         try {
           spec = StringUtils.replace(
-              spec,
-              "%%FORCE_GUARANTEED_ROLLUP%%",
-              Boolean.toString(false)
+                  spec,
+                  "%%FORCE_GUARANTEED_ROLLUP%%",
+                  Boolean.toString(false)
           );
           return StringUtils.replace(
-              spec,
-              "%%PARTITIONS_SPEC%%",
-              jsonMapper.writeValueAsString(partitionsSpec)
+                  spec,
+                  "%%PARTITIONS_SPEC%%",
+                  jsonMapper.writeValueAsString(partitionsSpec)
           );
         }
         catch (JsonProcessingException e) {
@@ -86,42 +89,42 @@ public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTes
       };
 
       doIndexTest(
-          INDEX_DATASOURCE,
-          INDEX_TASK,
-          rollupTransform,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              INDEX_DATASOURCE,
+              INDEX_TASK,
+              rollupTransform,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
 
       // Index again, this time only choosing the second data file, and without explicit intervals chosen.
       // The second datafile covers both day segments, so this should replace them, as reflected in the queries.
       doIndexTest(
-          INDEX_DATASOURCE,
-          REINDEX_TASK,
-          rollupTransform,
-          REINDEX_QUERIES_RESOURCE,
-          true,
-          true,
-          true
+              INDEX_DATASOURCE,
+              REINDEX_TASK,
+              rollupTransform,
+              REINDEX_QUERIES_RESOURCE,
+              true,
+              true,
+              true
       );
 
       doReindexTest(
-          INDEX_DATASOURCE,
-          INDEX_INGEST_SEGMENT_DATASOURCE,
-          rollupTransform,
-          INDEX_INGEST_SEGMENT_TASK,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              INDEX_INGEST_SEGMENT_DATASOURCE,
+              rollupTransform,
+              INDEX_INGEST_SEGMENT_TASK,
+              REINDEX_QUERIES_RESOURCE
       );
 
       // with DruidInputSource instead of IngestSegmentFirehose
       doReindexTest(
-          INDEX_DATASOURCE,
-          INDEX_DRUID_INPUT_SOURCE_DATASOURCE,
-          rollupTransform,
-          INDEX_DRUID_INPUT_SOURCE_TASK,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              INDEX_DRUID_INPUT_SOURCE_DATASOURCE,
+              rollupTransform,
+              INDEX_DRUID_INPUT_SOURCE_TASK,
+              REINDEX_QUERIES_RESOURCE
       );
     }
   }

@@ -19,15 +19,18 @@
 
 package org.apache.druid.tests.parallelized;
 
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.apache.druid.tests.indexer.AbstractKinesisIndexingServiceTest;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
-@Test(groups = TestNGGroup.KINESIS_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.KINESIS_INDEX;
+
+@Tag(KINESIS_INDEX)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisIndexingServiceTest
 {
   @Override
@@ -36,8 +39,8 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
     return "kinesis_parallelized";
   }
 
-  @BeforeClass
-  public void beforeClass() throws Exception
+  @BeforeAll
+  void beforeClass() throws Exception
   {
     doBeforeClass();
   }
@@ -47,7 +50,7 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKinesisIndexDataWithStartStopSupervisor() throws Exception
+  void testKinesisIndexDataWithStartStopSupervisor() throws Exception
   {
     doTestIndexDataWithStartStopSupervisor(null);
   }
@@ -57,7 +60,7 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKinesisIndexDataWithKinesisReshardSplit() throws Exception
+  void testKinesisIndexDataWithKinesisReshardSplit() throws Exception
   {
     doTestIndexDataWithStreamReshardSplit(null);
   }
@@ -67,7 +70,7 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKinesisIndexDataWithKinesisReshardMerge() throws Exception
+  void testKinesisIndexDataWithKinesisReshardMerge() throws Exception
   {
     doTestIndexDataWithStreamReshardMerge();
   }

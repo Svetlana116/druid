@@ -19,13 +19,19 @@
 
 package org.apache.druid.tests.indexer;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.druid.java.util.common.Pair;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.stream.Stream;
+
+import static org.apache.druid.tests.TestNGGroup.S3_DEEP_STORAGE;
 
 /**
  * IMPORTANT:
@@ -35,13 +41,36 @@ import java.util.List;
  *    integration-tests/docker/environment-configs/override-examples/s3 for env vars to provide.
  *    You will also need to include "druid-hdfs-storage" to druid_extensions_loadList in this file.
  */
-@Test(groups = TestNGGroup.S3_DEEP_STORAGE)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+
+@Tag(S3_DEEP_STORAGE)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITHdfsToS3ParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {
-  @Test(dataProvider = "resources")
-  public void testHdfsIndexData(Pair<String, List> hdfsInputSource) throws Exception
+  private static final String INPUT_SOURCE_PATHS_KEY = "paths";
+
+  @ParameterizedTest
+  @MethodSource("resources")
+  void testHdfsIndexData(Pair<String, List> hdfsInputSource) throws Exception
   {
     doTest(hdfsInputSource, InputFormatDetails.JSON);
+  }
+
+  public static Stream<Arguments> resources ()  {
+    return Stream.of(
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
+                    "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
+                    ImmutableList.of(
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
+                    )
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
+                    ImmutableList.of(
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data1%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data2%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data3%%FILE_EXTENSION%%"
+                    )
+            )));
   }
 }

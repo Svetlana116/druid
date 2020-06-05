@@ -39,13 +39,14 @@ import org.apache.druid.testing.utils.SqlTestQueryHelper;
 import org.apache.druid.timeline.DataSegment;
 import org.apache.druid.timeline.TimelineObjectHolder;
 import org.apache.druid.timeline.VersionedIntervalTimeline;
-import org.testng.Assert;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
 {
@@ -93,34 +94,34 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
   ClientInfoResourceTestClient clientInfoResourceTestClient;
 
   protected void doIndexTest(
-      String dataSource,
-      String indexTaskFilePath,
-      String queryFilePath,
-      boolean waitForNewVersion,
-      boolean runTestQueries,
-      boolean waitForSegmentsToLoad
+          String dataSource,
+          String indexTaskFilePath,
+          String queryFilePath,
+          boolean waitForNewVersion,
+          boolean runTestQueries,
+          boolean waitForSegmentsToLoad
   ) throws IOException
   {
     doIndexTest(dataSource, indexTaskFilePath, Function.identity(), queryFilePath, waitForNewVersion, runTestQueries, waitForSegmentsToLoad);
   }
 
   protected void doIndexTest(
-      String dataSource,
-      String indexTaskFilePath,
-      Function<String, String> taskSpecTransform,
-      String queryFilePath,
-      boolean waitForNewVersion,
-      boolean runTestQueries,
-      boolean waitForSegmentsToLoad
+          String dataSource,
+          String indexTaskFilePath,
+          Function<String, String> taskSpecTransform,
+          String queryFilePath,
+          boolean waitForNewVersion,
+          boolean runTestQueries,
+          boolean waitForSegmentsToLoad
   ) throws IOException
   {
     final String fullDatasourceName = dataSource + config.getExtraDatasourceNameSuffix();
     final String taskSpec = taskSpecTransform.apply(
-        StringUtils.replace(
-            getResourceAsString(indexTaskFilePath),
-            "%%DATASOURCE%%",
-            fullDatasourceName
-        )
+            StringUtils.replace(
+                    getResourceAsString(indexTaskFilePath),
+                    "%%DATASOURCE%%",
+                    fullDatasourceName
+            )
     );
 
     submitTaskAndWait(taskSpec, fullDatasourceName, waitForNewVersion, waitForSegmentsToLoad);
@@ -137,9 +138,9 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
         }
 
         queryResponseTemplate = StringUtils.replace(
-            queryResponseTemplate,
-            "%%DATASOURCE%%",
-            fullDatasourceName
+                queryResponseTemplate,
+                "%%DATASOURCE%%",
+                fullDatasourceName
         );
         queryHelper.testQueriesFromString(queryResponseTemplate, 2);
 
@@ -152,36 +153,36 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
   }
 
   protected void doReindexTest(
-      String baseDataSource,
-      String reindexDataSource,
-      String reindexTaskFilePath,
-      String queryFilePath
+          String baseDataSource,
+          String reindexDataSource,
+          String reindexTaskFilePath,
+          String queryFilePath
   ) throws IOException
   {
     doReindexTest(baseDataSource, reindexDataSource, Function.identity(), reindexTaskFilePath, queryFilePath);
   }
 
   void doReindexTest(
-      String baseDataSource,
-      String reindexDataSource,
-      Function<String, String> taskSpecTransform,
-      String reindexTaskFilePath,
-      String queryFilePath
+          String baseDataSource,
+          String reindexDataSource,
+          Function<String, String> taskSpecTransform,
+          String reindexTaskFilePath,
+          String queryFilePath
   ) throws IOException
   {
     final String fullBaseDatasourceName = baseDataSource + config.getExtraDatasourceNameSuffix();
     final String fullReindexDatasourceName = reindexDataSource + config.getExtraDatasourceNameSuffix();
 
     String taskSpec = StringUtils.replace(
-        getResourceAsString(reindexTaskFilePath),
-        "%%DATASOURCE%%",
-        fullBaseDatasourceName
+            getResourceAsString(reindexTaskFilePath),
+            "%%DATASOURCE%%",
+            fullBaseDatasourceName
     );
 
     taskSpec = StringUtils.replace(
-        taskSpec,
-        "%%REINDEX_DATASOURCE%%",
-        fullReindexDatasourceName
+            taskSpec,
+            "%%REINDEX_DATASOURCE%%",
+            fullReindexDatasourceName
     );
 
     taskSpec = taskSpecTransform.apply(taskSpec);
@@ -198,18 +199,18 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
       }
 
       queryResponseTemplate = StringUtils.replace(
-          queryResponseTemplate,
-          "%%DATASOURCE%%",
-          fullReindexDatasourceName
+              queryResponseTemplate,
+              "%%DATASOURCE%%",
+              fullReindexDatasourceName
       );
 
       queryHelper.testQueriesFromString(queryResponseTemplate, 2);
       // verify excluded dimension is not reIndexed
       final List<String> dimensions = clientInfoResourceTestClient.getDimensions(
-          fullReindexDatasourceName,
-          "2013-08-31T00:00:00.000Z/2013-09-10T00:00:00.000Z"
+              fullReindexDatasourceName,
+              "2013-08-31T00:00:00.000Z/2013-09-10T00:00:00.000Z"
       );
-      Assert.assertFalse(dimensions.contains("robot"), "dimensions : " + dimensions);
+      assertFalse(dimensions.contains("robot"), "dimensions : " + dimensions);
     }
     catch (Exception e) {
       LOG.error(e, "Error while testing");
@@ -218,16 +219,16 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
   }
 
   void doIndexTestSqlTest(
-      String dataSource,
-      String indexTaskFilePath,
-      String queryFilePath
+          String dataSource,
+          String indexTaskFilePath,
+          String queryFilePath
   ) throws IOException
   {
     final String fullDatasourceName = dataSource + config.getExtraDatasourceNameSuffix();
     final String taskSpec = StringUtils.replace(
-        getResourceAsString(indexTaskFilePath),
-        "%%DATASOURCE%%",
-        fullDatasourceName
+            getResourceAsString(indexTaskFilePath),
+            "%%DATASOURCE%%",
+            fullDatasourceName
     );
 
     submitTaskAndWait(taskSpec, fullDatasourceName, false, true);
@@ -241,10 +242,10 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
   }
 
   private void submitTaskAndWait(
-      String taskSpec,
-      String dataSourceName,
-      boolean waitForNewVersion,
-      boolean waitForSegmentsToLoad
+          String taskSpec,
+          String dataSourceName,
+          boolean waitForNewVersion,
+          boolean waitForSegmentsToLoad
   )
   {
     final List<DataSegment> oldVersions = waitForNewVersion ? coordinator.getAvailableSegments(dataSourceName) : null;
@@ -262,12 +263,12 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
     if (assertRunsSubTasks) {
       final boolean perfectRollup = !taskSpec.contains("dynamic");
       final long newSubTasks = countCompleteSubTasks(dataSourceName, perfectRollup) - startSubTaskCount;
-      Assert.assertTrue(
-          newSubTasks > 0,
-          StringUtils.format(
-              "The supervisor task[%s] didn't create any sub tasks. Was it executed in the parallel mode?",
-              taskID
-          )
+      assertTrue(
+              newSubTasks > 0,
+              StringUtils.format(
+                      "The supervisor task[%s] didn't create any sub tasks. Was it executed in the parallel mode?",
+                      taskID
+              )
       );
     }
 
@@ -278,27 +279,27 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
     // original segments have loaded.
     if (waitForNewVersion) {
       ITRetryUtil.retryUntilTrue(
-          () -> {
-            final VersionedIntervalTimeline<String, DataSegment> timeline = VersionedIntervalTimeline.forSegments(
-                coordinator.getAvailableSegments(dataSourceName)
-            );
-
-            final List<TimelineObjectHolder<String, DataSegment>> holders = timeline.lookup(Intervals.ETERNITY);
-            return FluentIterable
-                .from(holders)
-                .transformAndConcat(TimelineObjectHolder::getObject)
-                .anyMatch(
-                    chunk -> FluentIterable.from(oldVersions)
-                                           .anyMatch(oldSegment -> chunk.getObject().overshadows(oldSegment))
+              () -> {
+                final VersionedIntervalTimeline<String, DataSegment> timeline = VersionedIntervalTimeline.forSegments(
+                        coordinator.getAvailableSegments(dataSourceName)
                 );
-          },
-          "See a new version"
+
+                final List<TimelineObjectHolder<String, DataSegment>> holders = timeline.lookup(Intervals.ETERNITY);
+                return FluentIterable
+                        .from(holders)
+                        .transformAndConcat(TimelineObjectHolder::getObject)
+                        .anyMatch(
+                                chunk -> FluentIterable.from(oldVersions)
+                                        .anyMatch(oldSegment -> chunk.getObject().overshadows(oldSegment))
+                        );
+              },
+              "See a new version"
       );
     }
 
     if (waitForSegmentsToLoad) {
       ITRetryUtil.retryUntilTrue(
-          () -> coordinator.areSegmentsLoaded(dataSourceName), "Segment Load"
+              () -> coordinator.areSegmentsLoaded(dataSourceName), "Segment Load"
       );
     }
   }
@@ -306,18 +307,18 @@ public abstract class AbstractITBatchIndexTest extends AbstractIndexerTest
   private long countCompleteSubTasks(final String dataSource, final boolean perfectRollup)
   {
     return indexer.getCompleteTasksForDataSource(dataSource)
-                  .stream()
-                  .filter(t -> {
-                    if (!perfectRollup) {
-                      return t.getType().equals(SinglePhaseSubTask.TYPE);
-                    } else {
-                      return t.getType().equalsIgnoreCase(PartialHashSegmentGenerateTask.TYPE)
-                             || t.getType().equalsIgnoreCase(PartialHashSegmentMergeTask.TYPE)
-                             || t.getType().equalsIgnoreCase(PartialDimensionDistributionTask.TYPE)
-                             || t.getType().equalsIgnoreCase(PartialRangeSegmentGenerateTask.TYPE)
-                             || t.getType().equalsIgnoreCase(PartialGenericSegmentMergeTask.TYPE);
-                    }
-                  })
-                  .count();
+            .stream()
+            .filter(t -> {
+              if (!perfectRollup) {
+                return t.getType().equals(SinglePhaseSubTask.TYPE);
+              } else {
+                return t.getType().equalsIgnoreCase(PartialHashSegmentGenerateTask.TYPE)
+                        || t.getType().equalsIgnoreCase(PartialHashSegmentMergeTask.TYPE)
+                        || t.getType().equalsIgnoreCase(PartialDimensionDistributionTask.TYPE)
+                        || t.getType().equalsIgnoreCase(PartialRangeSegmentGenerateTask.TYPE)
+                        || t.getType().equalsIgnoreCase(PartialGenericSegmentMergeTask.TYPE);
+              }
+            })
+            .count();
   }
 }

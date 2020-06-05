@@ -90,14 +90,14 @@ public abstract class AbstractIndexerTest
     Interval interval = Intervals.of(start + "/" + end);
     coordinator.unloadSegmentsForDataSource(dataSource);
     ITRetryUtil.retryUntilFalse(
-        new Callable<Boolean>()
-        {
-          @Override
-          public Boolean call()
-          {
-            return coordinator.areSegmentsLoaded(dataSource);
-          }
-        }, "Segment Unloading"
+            new Callable<Boolean>()
+            {
+              @Override
+              public Boolean call()
+              {
+                return coordinator.areSegmentsLoaded(dataSource);
+              }
+            }, "Segment Unloading"
     );
     coordinator.deleteSegmentsDataSource(dataSource, interval);
     waitForAllTasksToCompleteForDataSource(dataSource);
@@ -106,8 +106,8 @@ public abstract class AbstractIndexerTest
   protected void waitForAllTasksToCompleteForDataSource(final String dataSource)
   {
     ITRetryUtil.retryUntilTrue(
-        () -> (indexer.getUncompletedTasksForDataSource(dataSource).size() == 0),
-        StringUtils.format("Waiting for all tasks of [%s] to complete", dataSource)
+            () -> (indexer.getUncompletedTasksForDataSource(dataSource).size() == 0),
+            StringUtils.format("Waiting for all tasks of [%s] to complete", dataSource)
     );
   }
 
@@ -128,8 +128,8 @@ public abstract class AbstractIndexerTest
     List<String> resources = new ArrayList<>();
 
     try (
-        InputStream in = getResourceAsStream(dir);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in, StringUtils.UTF8_STRING))
+            InputStream in = getResourceAsStream(dir);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in, StringUtils.UTF8_STRING))
     ) {
       String resource;
 

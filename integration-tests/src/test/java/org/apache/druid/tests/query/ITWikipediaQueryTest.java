@@ -28,23 +28,26 @@ import org.apache.druid.server.QueryCapacityExceededException;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
 import org.apache.druid.testing.clients.QueryResourceTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.GuiceExtensionTest;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
-@Test(groups = TestNGGroup.QUERY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.QUERY;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Tag(QUERY)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITWikipediaQueryTest
 {
   private static final String WIKIPEDIA_DATA_SOURCE = "wikipedia_editstream";
@@ -61,30 +64,30 @@ public class ITWikipediaQueryTest
   @Inject
   private IntegrationTestingConfig config;
 
-  @BeforeMethod
-  public void before() throws Exception
+  @BeforeEach
+  void before() throws Exception
   {
 
     // ensure that wikipedia segments are loaded completely
     ITRetryUtil.retryUntilTrue(
-        () -> coordinatorClient.areSegmentsLoaded(WIKIPEDIA_DATA_SOURCE), "wikipedia segment load"
+            () -> coordinatorClient.areSegmentsLoaded(WIKIPEDIA_DATA_SOURCE), "wikipedia segment load"
     );
     if (!coordinatorClient.areLookupsLoaded(WIKI_LOOKUP)) {
       coordinatorClient.initializeLookups(WIKIPEDIA_LOOKUP_RESOURCE);
       ITRetryUtil.retryUntilTrue(
-          () -> coordinatorClient.areLookupsLoaded(WIKI_LOOKUP), "wikipedia lookup load"
+              () -> coordinatorClient.areLookupsLoaded(WIKI_LOOKUP), "wikipedia lookup load"
       );
     }
   }
 
   @Test
-  public void testWikipediaQueriesFromFile() throws Exception
+  void testWikipediaQueriesFromFile() throws Exception
   {
     queryHelper.testQueriesFromFile(WIKIPEDIA_QUERIES_RESOURCE, 2);
   }
 
   @Test
-  public void testQueryLaningLaneIsLimited() throws Exception
+  void testQueryLaningLaneIsLimited() throws Exception
   {
     // the broker is configured with a manually defined query lane, 'one' with limit 1
     //  -Ddruid.query.scheduler.laning.type=manual
@@ -95,10 +98,10 @@ public class ITWikipediaQueryTest
     List<Future<StatusResponseHolder>> futures = new ArrayList<>(numQueries);
     for (int i = 0; i < numQueries; i++) {
       futures.add(
-          queryClient.queryAsync(
-              queryHelper.getQueryURL(config.getBrokerUrl()),
-              getQueryBuilder().build()
-          )
+              queryClient.queryAsync(
+                      queryHelper.getQueryURL(config.getBrokerUrl()),
+                      getQueryBuilder().build()
+              )
       );
     }
 
@@ -109,33 +112,33 @@ public class ITWikipediaQueryTest
       StatusResponseHolder status = future.get();
       if (status.getStatus().getCode() == QueryCapacityExceededException.STATUS_CODE) {
         limited++;
-        Assert.assertTrue(status.getContent().contains(QueryCapacityExceededException.makeLaneErrorMessage("one", 1)));
+        assertTrue(status.getContent().contains(QueryCapacityExceededException.makeLaneErrorMessage("one", 1)));
       } else if (status.getStatus().getCode() == HttpResponseStatus.OK.getCode()) {
         success++;
       }
     }
 
-    Assert.assertTrue(success > 0);
-    Assert.assertTrue(limited > 0);
+    assertTrue(success > 0);
+    assertTrue(limited > 0);
 
     // test another to make sure we can still issue one query at a time
     StatusResponseHolder followUp = queryClient.queryAsync(
-        queryHelper.getQueryURL(config.getBrokerUrl()),
-        getQueryBuilder().build()
+            queryHelper.getQueryURL(config.getBrokerUrl()),
+            getQueryBuilder().build()
     ).get();
 
-    Assert.assertEquals(HttpResponseStatus.OK.getCode(), followUp.getStatus().getCode());
+    assertEquals(HttpResponseStatus.OK.getCode(), followUp.getStatus().getCode());
 
     StatusResponseHolder andAnother = queryClient.queryAsync(
-        queryHelper.getQueryURL(config.getBrokerUrl()),
-        getQueryBuilder().build()
+            queryHelper.getQueryURL(config.getBrokerUrl()),
+            getQueryBuilder().build()
     ).get();
 
-    Assert.assertEquals(HttpResponseStatus.OK.getCode(), andAnother.getStatus().getCode());
+    assertEquals(HttpResponseStatus.OK.getCode(), andAnother.getStatus().getCode());
   }
 
   @Test
-  public void testQueryLaningWithNoLane() throws Exception
+  void testQueryLaningWithNoLane() throws Exception
   {
     // the broker is configured with a manually defined query lane, 'one' with limit 1
     //  -Ddruid.query.scheduler.laning.type=manual
@@ -145,10 +148,10 @@ public class ITWikipediaQueryTest
     List<Future<StatusResponseHolder>> futures = new ArrayList<>(numQueries);
     for (int i = 0; i < numQueries; i++) {
       futures.add(
-          queryClient.queryAsync(
-              queryHelper.getQueryURL(config.getBrokerUrl()),
-              getQueryBuilder().context(ImmutableMap.of("queryId", UUID.randomUUID().toString())).build()
-          )
+              queryClient.queryAsync(
+                      queryHelper.getQueryURL(config.getBrokerUrl()),
+                      getQueryBuilder().context(ImmutableMap.of("queryId", UUID.randomUUID().toString())).build()
+              )
       );
     }
 
@@ -164,17 +167,17 @@ public class ITWikipediaQueryTest
       }
     }
 
-    Assert.assertTrue(success > 0);
-    Assert.assertEquals(limited, 0);
+    assertTrue(success > 0);
+    assertEquals(limited, 0);
 
   }
 
   private Druids.TimeseriesQueryBuilder getQueryBuilder()
   {
     return Druids.newTimeseriesQueryBuilder()
-                 .dataSource("wikipedia_editstream")
-                 .aggregators(new CountAggregatorFactory("chocula"))
-                 .intervals("2013-01-01T00:00:00.000/2013-01-08T00:00:00.000")
-                 .context(ImmutableMap.of("lane", "one", "queryId", UUID.randomUUID().toString()));
+            .dataSource("wikipedia_editstream")
+            .aggregators(new CountAggregatorFactory("chocula"))
+            .intervals("2013-01-01T00:00:00.000/2013-01-08T00:00:00.000")
+            .context(ImmutableMap.of("lane", "one", "queryId", UUID.randomUUID().toString()));
   }
 }

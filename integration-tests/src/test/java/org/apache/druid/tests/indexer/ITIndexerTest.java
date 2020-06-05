@@ -19,15 +19,19 @@
 
 package org.apache.druid.tests.indexer;
 
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
-import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
+import org.apache.druid.testing.guice.IncludeModule;
+import org.apache.druid.tests.GuiceExtensionTest;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 
-@Test(groups = {TestNGGroup.BATCH_INDEX, TestNGGroup.QUICKSTART_COMPATIBLE})
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
+import static org.apache.druid.tests.TestNGGroup.QUICKSTART_COMPATIBLE;
+
+@Tag(BATCH_INDEX)
+@Tag( QUICKSTART_COMPATIBLE)
+@IncludeModule(GuiceExtensionTest.TestModule.class)
 public class ITIndexerTest extends AbstractITBatchIndexTest
 {
   private static final String INDEX_TASK = "/indexer/wikipedia_index_task.json";
@@ -46,67 +50,67 @@ public class ITIndexerTest extends AbstractITBatchIndexTest
   private static final String REINDEX_DATASOURCE = "wikipedia_reindex_test";
 
   @Test
-  public void testIndexData() throws Exception
+  void testIndexData() throws Exception
   {
     final String reindexDatasource = REINDEX_DATASOURCE + "-testIndexData";
     final String reindexDatasourceWithDruidInputSource = REINDEX_DATASOURCE + "-testIndexData-druidInputSource";
     try (
-        final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored3 = unloader(reindexDatasourceWithDruidInputSource + config.getExtraDatasourceNameSuffix())
+            final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored3 = unloader(reindexDatasourceWithDruidInputSource + config.getExtraDatasourceNameSuffix())
     ) {
       doIndexTest(
-          INDEX_DATASOURCE,
-          INDEX_TASK,
-          INDEX_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              INDEX_DATASOURCE,
+              INDEX_TASK,
+              INDEX_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
       doReindexTest(
-          INDEX_DATASOURCE,
-          reindexDatasource,
-          REINDEX_TASK,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              reindexDatasource,
+              REINDEX_TASK,
+              REINDEX_QUERIES_RESOURCE
       );
       doReindexTest(
-          INDEX_DATASOURCE,
-          reindexDatasourceWithDruidInputSource,
-          REINDEX_TASK_WITH_DRUID_INPUT_SOURCE,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_DATASOURCE,
+              reindexDatasourceWithDruidInputSource,
+              REINDEX_TASK_WITH_DRUID_INPUT_SOURCE,
+              REINDEX_QUERIES_RESOURCE
       );
     }
   }
 
   @Test
-  public void testReIndexDataWithTimestamp() throws Exception
+  void testReIndexDataWithTimestamp() throws Exception
   {
     final String reindexDatasource = REINDEX_DATASOURCE + "-testReIndexDataWithTimestamp";
     final String reindexDatasourceWithDruidInputSource = REINDEX_DATASOURCE + "-testReIndexDataWithTimestamp-druidInputSource";
     try (
-        final Closeable ignored1 = unloader(INDEX_WITH_TIMESTAMP_DATASOURCE + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix());
-        final Closeable ignored3 = unloader(reindexDatasourceWithDruidInputSource + config.getExtraDatasourceNameSuffix())
+            final Closeable ignored1 = unloader(INDEX_WITH_TIMESTAMP_DATASOURCE + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored2 = unloader(reindexDatasource + config.getExtraDatasourceNameSuffix());
+            final Closeable ignored3 = unloader(reindexDatasourceWithDruidInputSource + config.getExtraDatasourceNameSuffix())
     ) {
       doIndexTest(
-          INDEX_WITH_TIMESTAMP_DATASOURCE,
-          INDEX_WITH_TIMESTAMP_TASK,
-          INDEX_WITH_TIMESTAMP_QUERIES_RESOURCE,
-          false,
-          true,
-          true
+              INDEX_WITH_TIMESTAMP_DATASOURCE,
+              INDEX_WITH_TIMESTAMP_TASK,
+              INDEX_WITH_TIMESTAMP_QUERIES_RESOURCE,
+              false,
+              true,
+              true
       );
       doReindexTest(
-          INDEX_WITH_TIMESTAMP_DATASOURCE,
-          reindexDatasource,
-          REINDEX_TASK,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_WITH_TIMESTAMP_DATASOURCE,
+              reindexDatasource,
+              REINDEX_TASK,
+              REINDEX_QUERIES_RESOURCE
       );
       doReindexTest(
-          INDEX_WITH_TIMESTAMP_DATASOURCE,
-          reindexDatasourceWithDruidInputSource,
-          REINDEX_TASK_WITH_DRUID_INPUT_SOURCE,
-          REINDEX_QUERIES_RESOURCE
+              INDEX_WITH_TIMESTAMP_DATASOURCE,
+              reindexDatasourceWithDruidInputSource,
+              REINDEX_TASK_WITH_DRUID_INPUT_SOURCE,
+              REINDEX_QUERIES_RESOURCE
       );
     }
   }

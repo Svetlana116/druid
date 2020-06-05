@@ -91,8 +91,8 @@ public abstract class AbstractITRealtimeIndexTaskTest extends AbstractIndexerTes
     try (final Closeable ignored = unloader(fullDatasourceName)) {
       // the task will run for 5 minutes and then shutdown itself
       String task = setShutOffTime(
-          getResourceAsString(getTaskResource()),
-          DateTimes.utc(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))
+              getResourceAsString(getTaskResource()),
+              DateTimes.utc(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5))
       );
       task = StringUtils.replace(task, "%%DATASOURCE%%", fullDatasourceName);
 
@@ -110,14 +110,14 @@ public abstract class AbstractITRealtimeIndexTaskTest extends AbstractIndexerTes
 
       // wait for a while to let the events be ingested
       ITRetryUtil.retryUntil(
-          () -> {
-            final int countRows = queryHelper.countRows(fullDatasourceName, Intervals.ETERNITY.toString());
-            return countRows == getNumExpectedRowsIngested();
-          },
-          true,
-          DELAY_FOR_RETRIES_MS,
-          NUM_RETRIES,
-          "Waiting all events are ingested"
+              () -> {
+                final int countRows = queryHelper.countRows(fullDatasourceName, Intervals.ETERNITY.toString());
+                return countRows == getNumExpectedRowsIngested();
+              },
+              true,
+              DELAY_FOR_RETRIES_MS,
+              NUM_RETRIES,
+              "Waiting all events are ingested"
       );
 
       // put the timestamps into the query structure
@@ -156,11 +156,11 @@ public abstract class AbstractITRealtimeIndexTaskTest extends AbstractIndexerTes
 
       // task should complete only after the segments are loaded by historical node
       ITRetryUtil.retryUntil(
-          () -> coordinator.areSegmentsLoaded(fullDatasourceName),
-          true,
-          DELAY_FOR_RETRIES_MS,
-          NUM_RETRIES,
-          "Real-time generated segments loaded"
+              () -> coordinator.areSegmentsLoaded(fullDatasourceName),
+              true,
+              DELAY_FOR_RETRIES_MS,
+              NUM_RETRIES,
+              "Real-time generated segments loaded"
       );
 
       // queries should be answered by historical
@@ -179,8 +179,8 @@ public abstract class AbstractITRealtimeIndexTaskTest extends AbstractIndexerTes
   private String getRouterURL()
   {
     return StringUtils.format(
-        "%s/druid/v2?pretty",
-        config.getRouterUrl()
+            "%s/druid/v2?pretty",
+            config.getRouterUrl()
     );
   }
 

@@ -61,6 +61,7 @@ public class ITAutoCompactionTest extends AbstractIndexerTest
   private static final int MAX_ROWS_PER_SEGMENT_COMPACTED = 10000;
   private static final Period SKIP_OFFSET_FROM_LATEST = Period.seconds(0);
 
+
   @Inject
   protected CompactionResourceTestClient compactionResource;
 

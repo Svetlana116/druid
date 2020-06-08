@@ -27,7 +27,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.druid.tests.TestNGGroup.SECURITY;
+import static org.apache.druid.tests.TestGroup.SECURITY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Tag(SECURITY)

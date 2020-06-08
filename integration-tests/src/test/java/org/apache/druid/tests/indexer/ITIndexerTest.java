@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 
-import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
-import static org.apache.druid.tests.TestNGGroup.QUICKSTART_COMPATIBLE;
+import static org.apache.druid.tests.TestGroup.BATCH_INDEX;
+import static org.apache.druid.tests.TestGroup.QUICKSTART_COMPATIBLE;
 
 @Tag(BATCH_INDEX)
 @Tag( QUICKSTART_COMPATIBLE)

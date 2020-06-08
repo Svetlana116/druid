@@ -28,7 +28,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 import java.util.List;
 
-import static org.apache.druid.tests.TestNGGroup.AZURE_DEEP_STORAGE;
+import static org.apache.druid.tests.TestGroup.AZURE_DEEP_STORAGE;
 
 /**
  * IMPORTANT:

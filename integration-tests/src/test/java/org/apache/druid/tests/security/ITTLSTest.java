@@ -51,7 +51,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URL;
 
-import static org.apache.druid.tests.TestNGGroup.SECURITY;
+import static org.apache.druid.tests.TestGroup.SECURITY;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(SECURITY)

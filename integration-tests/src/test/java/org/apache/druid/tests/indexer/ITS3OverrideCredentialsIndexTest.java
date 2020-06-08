@@ -33,7 +33,7 @@ import java.io.Closeable;
 import java.util.UUID;
 import java.util.function.Function;
 
-import static org.apache.druid.tests.TestNGGroup.S3_INGESTION;
+import static org.apache.druid.tests.TestGroup.S3_INGESTION;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

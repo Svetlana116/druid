@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.apache.druid.tests.TestNGGroup.GCS_DEEP_STORAGE;
+import static org.apache.druid.tests.TestGroup.GCS_DEEP_STORAGE;
 
 /**
  * IMPORTANT:

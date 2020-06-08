@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 
-import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
+import static org.apache.druid.tests.TestGroup.BATCH_INDEX;
 
 @Tag(BATCH_INDEX)
 @IncludeModule(GuiceTestModule.class)

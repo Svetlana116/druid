@@ -30,7 +30,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.druid.tests.TestNGGroup.QUERY;
+import static org.apache.druid.tests.TestGroup.QUERY;
 
 @Tag(QUERY)
 @IncludeModule(GuiceTestModule.class)

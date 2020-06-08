@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.druid.tests.TestNGGroup.KINESIS_INDEX;
+import static org.apache.druid.tests.TestGroup.KINESIS_INDEX;
 
 @Tag(KINESIS_INDEX)
 @IncludeModule(GuiceTestModule.class)

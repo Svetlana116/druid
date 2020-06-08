@@ -23,7 +23,7 @@ import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.junit.jupiter.api.Tag;
 
-import static org.apache.druid.tests.TestNGGroup.HADOOP_AZURE_TO_AZURE;
+import static org.apache.druid.tests.TestGroup.HADOOP_AZURE_TO_AZURE;
 
 /**
  * IMPORTANT:

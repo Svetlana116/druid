@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.apache.druid.tests.TestNGGroup.REALTIME_INDEX;
+import static org.apache.druid.tests.TestGroup.REALTIME_INDEX;
 
 /**
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.

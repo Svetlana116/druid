@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.apache.druid.tests.TestNGGroup.KAFKA_DATA_FORMAT;
+import static org.apache.druid.tests.TestGroup.KAFKA_DATA_FORMAT;
 
 @Execution(ExecutionMode.CONCURRENT)
 @Tag(KAFKA_DATA_FORMAT)

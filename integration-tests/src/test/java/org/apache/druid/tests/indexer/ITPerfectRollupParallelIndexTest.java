@@ -35,7 +35,7 @@ import java.io.Closeable;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.apache.druid.tests.TestNGGroup.PERFECT_ROLLUP_PARALLEL_BATCH_INDEX;
+import static org.apache.druid.tests.TestGroup.PERFECT_ROLLUP_PARALLEL_BATCH_INDEX;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag(PERFECT_ROLLUP_PARALLEL_BATCH_INDEX)

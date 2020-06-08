@@ -24,7 +24,7 @@ import org.apache.druid.testing.guice.IncludeModule;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.druid.tests.TestNGGroup.HADOOP_S3_TO_HDFS;
+import static org.apache.druid.tests.TestGroup.HADOOP_S3_TO_HDFS;
 
 /**
  * IMPORTANT:

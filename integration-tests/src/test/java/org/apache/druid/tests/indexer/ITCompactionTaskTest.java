@@ -39,8 +39,8 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.apache.druid.tests.TestNGGroup.OTHER_INDEX;
-import static org.apache.druid.tests.TestNGGroup.QUICKSTART_COMPATIBLE;
+import static org.apache.druid.tests.TestGroup.OTHER_INDEX;
+import static org.apache.druid.tests.TestGroup.QUICKSTART_COMPATIBLE;
 
 @Tag(OTHER_INDEX)
 @Tag( QUICKSTART_COMPATIBLE)

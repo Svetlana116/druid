@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static org.apache.druid.tests.TestNGGroup.OTHER_INDEX;
+import static org.apache.druid.tests.TestGroup.OTHER_INDEX;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(OTHER_INDEX)

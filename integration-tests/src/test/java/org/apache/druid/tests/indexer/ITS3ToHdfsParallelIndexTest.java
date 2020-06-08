@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.apache.druid.tests.TestNGGroup.HDFS_DEEP_STORAGE;
+import static org.apache.druid.tests.TestGroup.HDFS_DEEP_STORAGE;
 
 /**
  * IMPORTANT:

@@ -39,7 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import static org.apache.druid.tests.TestNGGroup.QUERY;
+import static org.apache.druid.tests.TestGroup.QUERY;
 
 @Tag(QUERY)
 @IncludeModule(GuiceTestModule.class)

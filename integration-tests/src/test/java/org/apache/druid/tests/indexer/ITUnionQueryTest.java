@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.druid.tests.TestNGGroup.QUERY;
+import static org.apache.druid.tests.TestGroup.QUERY;
 
 @Tag(QUERY)
 @IncludeModule(GuiceTestModule.class)

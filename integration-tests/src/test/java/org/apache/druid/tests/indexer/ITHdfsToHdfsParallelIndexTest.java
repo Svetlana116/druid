@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.apache.druid.tests.TestNGGroup.HDFS_DEEP_STORAGE;
+import static org.apache.druid.tests.TestGroup.HDFS_DEEP_STORAGE;
 
 /**
  * IMPORTANT:

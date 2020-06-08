@@ -26,7 +26,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-import static org.apache.druid.tests.TestNGGroup.TRANSACTIONAL_KAFKA_INDEX;
+import static org.apache.druid.tests.TestGroup.TRANSACTIONAL_KAFKA_INDEX;
 
 @Tag(TRANSACTIONAL_KAFKA_INDEX)
 @IncludeModule(GuiceTestModule.class)

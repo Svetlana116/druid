@@ -23,7 +23,7 @@ package org.apache.druid.tests;
  * These groups are used by continuous integration to split the integration tests into multiple jobs. Any tests that
  * are not annotated with a group will still be run by an "other" integration test continuous integration job.
  */
-public class TestNGGroup
+public class TestGroup
 {
   public static final String BATCH_INDEX = "batch-index";
 

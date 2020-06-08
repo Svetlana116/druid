@@ -60,7 +60,7 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.apache.druid.tests.TestNGGroup.SECURITY;
+import static org.apache.druid.tests.TestGroup.SECURITY;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(SECURITY)

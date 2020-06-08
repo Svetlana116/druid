@@ -34,7 +34,7 @@ import java.io.Closeable;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
+import static org.apache.druid.tests.TestGroup.BATCH_INDEX;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Tag(BATCH_INDEX)

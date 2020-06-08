@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static org.apache.druid.tests.TestNGGroup.KINESIS_DATA_FORMAT;
+import static org.apache.druid.tests.TestGroup.KINESIS_DATA_FORMAT;
 
 @Execution(ExecutionMode.CONCURRENT)
 @Tag(KINESIS_DATA_FORMAT)

@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import static org.apache.druid.tests.TestNGGroup.KINESIS_INDEX;
+import static org.apache.druid.tests.TestGroup.KINESIS_INDEX;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(KINESIS_INDEX)

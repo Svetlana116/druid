@@ -29,7 +29,6 @@ import org.apache.druid.testing.clients.EventReceiverFirehoseTestClient;
 import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ServerDiscoveryUtil;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import static org.apache.druid.tests.TestNGGroup.REALTIME_INDEX;
+import static org.apache.druid.tests.TestGroup.REALTIME_INDEX;
 
 /**
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.

@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
-import static org.apache.druid.tests.TestNGGroup.QUERY;
+import static org.apache.druid.tests.TestGroup.QUERY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

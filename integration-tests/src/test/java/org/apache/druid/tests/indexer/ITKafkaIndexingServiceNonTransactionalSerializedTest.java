@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
-import static org.apache.druid.tests.TestNGGroup.KAFKA_INDEX_SLOW;
+import static org.apache.druid.tests.TestGroup.KAFKA_INDEX_SLOW;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(KAFKA_INDEX_SLOW)

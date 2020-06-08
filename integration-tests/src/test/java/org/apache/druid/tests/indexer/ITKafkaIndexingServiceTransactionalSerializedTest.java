@@ -19,8 +19,8 @@
 
 package org.apache.druid.tests.indexer;
 
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import static org.apache.druid.tests.TestNGGroup.TRANSACTIONAL_KAFKA_INDEX_SLOW;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TRANSACTIONAL_KAFKA_INDEX_SLOW)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITKafkaIndexingServiceTransactionalSerializedTest extends AbstractKafkaIndexingServiceTest
 {
   @Override

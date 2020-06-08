@@ -19,8 +19,8 @@
 
 package org.apache.druid.tests.hadoop;
 
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ import static org.apache.druid.tests.TestNGGroup.HADOOP_S3_TO_S3;
  * 5) Run the test with -Dstart.hadoop.docker=true -Dextra.datasource.name.suffix='' in the mvn command
  */
 @Tag(HADOOP_S3_TO_S3)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITS3InputToS3HadoopIndexTest extends AbstractS3InputHadoopIndexTest
 {
   @Test()

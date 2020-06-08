@@ -22,13 +22,11 @@ package org.apache.druid.tests.indexer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.druid.java.util.common.Pair;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
@@ -50,11 +48,9 @@ import static org.apache.druid.tests.TestNGGroup.HDFS_DEEP_STORAGE;
  * 5) Run the test with -Dstart.hadoop.docker=true in the mvn command
  */
 @Tag(HDFS_DEEP_STORAGE)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITGcsToHdfsParallelIndexTest extends AbstractGcsInputSourceParallelIndexTest
 {
-  private static final String INDEX_TASK = "/indexer/wikipedia_cloud_index_task.json";
-  private static final String INDEX_QUERIES_RESOURCE = "/indexer/wikipedia_index_queries.json";
   private static final String INPUT_SOURCE_URIS_KEY = "uris";
   private static final String INPUT_SOURCE_PREFIXES_KEY = "prefixes";
   private static final String INPUT_SOURCE_OBJECTS_KEY = "objects";

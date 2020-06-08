@@ -22,14 +22,11 @@ package org.apache.druid.tests.indexer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.druid.java.util.common.Pair;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
@@ -48,7 +45,7 @@ import static org.apache.druid.tests.TestNGGroup.S3_DEEP_STORAGE;
  *    integration-tests/docker/environment-configs/override-examples/s3 for env vars to provide.
  */
 @Tag(S3_DEEP_STORAGE)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITS3ToS3ParallelIndexTest extends AbstractS3InputSourceParallelIndexTest
 {
   private static final String INPUT_SOURCE_URIS_KEY = "uris";

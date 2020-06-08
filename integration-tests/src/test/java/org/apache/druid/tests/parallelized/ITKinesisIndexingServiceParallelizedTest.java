@@ -19,18 +19,17 @@
 
 package org.apache.druid.tests.parallelized;
 
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.apache.druid.tests.indexer.AbstractKinesisIndexingServiceTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 
 import static org.apache.druid.tests.TestNGGroup.KINESIS_INDEX;
 
 @Tag(KINESIS_INDEX)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisIndexingServiceTest
 {
   @Override

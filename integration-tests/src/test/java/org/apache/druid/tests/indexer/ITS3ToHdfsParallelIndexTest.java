@@ -20,8 +20,8 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +42,7 @@ import static org.apache.druid.tests.TestNGGroup.HDFS_DEEP_STORAGE;
  * 4) Run the test with -Dstart.hadoop.docker=true in the mvn command
  */
 @Tag(HDFS_DEEP_STORAGE)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITS3ToHdfsParallelIndexTest extends AbstractS3InputSourceParallelIndexTest
 {
   @Test

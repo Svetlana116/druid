@@ -23,15 +23,15 @@ import com.google.inject.Inject;
 import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.server.coordinator.CoordinatorDynamicConfig;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Test;
 
 import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
 
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITTestCoordinatorPausedTest extends AbstractITBatchIndexTest
 {
   private static final Logger LOG = new Logger(ITUnionQueryTest.class);

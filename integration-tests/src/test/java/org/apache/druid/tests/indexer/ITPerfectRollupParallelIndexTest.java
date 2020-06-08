@@ -24,8 +24,8 @@ import org.apache.druid.indexer.partitions.HashedPartitionsSpec;
 import org.apache.druid.indexer.partitions.PartitionsSpec;
 import org.apache.druid.indexer.partitions.SingleDimensionPartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -39,7 +39,7 @@ import static org.apache.druid.tests.TestNGGroup.PERFECT_ROLLUP_PARALLEL_BATCH_I
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Tag(PERFECT_ROLLUP_PARALLEL_BATCH_INDEX)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITPerfectRollupParallelIndexTest extends AbstractITBatchIndexTest
 {
   // The task specs here use the MaxSizeSplitHintSpec with maxSplitSize of 1. This is to create splits per file.

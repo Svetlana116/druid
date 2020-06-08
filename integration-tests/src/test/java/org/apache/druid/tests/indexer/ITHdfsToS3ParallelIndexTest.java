@@ -21,8 +21,8 @@ package org.apache.druid.tests.indexer;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.druid.java.util.common.Pair;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -43,7 +43,7 @@ import static org.apache.druid.tests.TestNGGroup.S3_DEEP_STORAGE;
  */
 
 @Tag(S3_DEEP_STORAGE)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITHdfsToS3ParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {
   private static final String INPUT_SOURCE_PATHS_KEY = "paths";

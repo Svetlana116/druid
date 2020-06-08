@@ -25,9 +25,9 @@ import org.apache.druid.java.util.common.ISE;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.testing.IntegrationTestingConfig;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -44,7 +44,7 @@ import static org.apache.druid.tests.TestNGGroup.QUICKSTART_COMPATIBLE;
 
 @Tag(OTHER_INDEX)
 @Tag( QUICKSTART_COMPATIBLE)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITCompactionTaskTest extends AbstractIndexerTest
 {
   private static final Logger LOG = new Logger(ITCompactionTaskTest.class);

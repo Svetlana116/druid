@@ -23,8 +23,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.indexer.partitions.PartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -38,7 +38,7 @@ import static org.apache.druid.tests.TestNGGroup.BATCH_INDEX;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Tag(BATCH_INDEX)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTest
 {
   // The task specs here use the MaxSizeSplitHintSpec with maxSplitSize of 1. This is to create splits per file.

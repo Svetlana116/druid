@@ -22,13 +22,11 @@ package org.apache.druid.tests.indexer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.apache.druid.java.util.common.Pair;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
@@ -49,7 +47,7 @@ import static org.apache.druid.tests.TestNGGroup.HDFS_DEEP_STORAGE;
  * 4) Run the test with -Dstart.hadoop.docker=true in the mvn command
  */
 @Tag(HDFS_DEEP_STORAGE)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITAzureToHdfsParallelIndexTest extends AbstractAzureInputSourceParallelIndexTest
 {
   private static final String INPUT_SOURCE_URIS_KEY = "uris";

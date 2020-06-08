@@ -26,6 +26,7 @@ import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.jackson.JacksonUtils;
 import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.testing.clients.EventReceiverFirehoseTestClient;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ServerDiscoveryUtil;
 import org.apache.druid.tests.GuiceExtensionTest;
@@ -47,7 +48,7 @@ import static org.apache.druid.tests.TestNGGroup.REALTIME_INDEX;
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.
  */
 @Tag(REALTIME_INDEX)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtimeIndexTaskTest
 {
   private static final Logger LOG = new Logger(ITAppenderatorDriverRealtimeIndexTaskTest.class);

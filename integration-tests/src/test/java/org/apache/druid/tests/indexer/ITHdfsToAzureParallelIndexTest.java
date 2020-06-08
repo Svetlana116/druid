@@ -21,8 +21,8 @@ package org.apache.druid.tests.indexer;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.druid.java.util.common.Pair;
+import org.apache.druid.testing.guice.GuiceTestModule;
 import org.apache.druid.testing.guice.IncludeModule;
-import org.apache.druid.tests.GuiceExtensionTest;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -42,7 +42,7 @@ import static org.apache.druid.tests.TestNGGroup.AZURE_DEEP_STORAGE;
  *    You will also need to include "druid-hdfs-storage" to druid_extensions_loadList in this file.
  */
 @Tag(AZURE_DEEP_STORAGE)
-@IncludeModule(GuiceExtensionTest.TestModule.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITHdfsToAzureParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {
   private static final String INPUT_SOURCE_PATHS_KEY = "paths";

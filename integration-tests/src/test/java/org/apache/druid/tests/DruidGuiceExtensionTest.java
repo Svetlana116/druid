@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static com.google.common.truth.Truth.assertThat;
 
 @IncludeModule(GuiceTestModule.class)
-public class GuiceExtensionTest
+public class DruidGuiceExtensionTest
 {
   @Inject static int STATIC_INJECTION;
   @Inject

@@ -34,6 +34,7 @@ then
     fi
 else
     echo "\$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH is set with value ${DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH}"
+    cat "$DRUID_INTEGRATION_TEST_OVERRIDE_CONFIG_PATH"
 fi
 
 # Start docker containers for all Druid processes and dependencies

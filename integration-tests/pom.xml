@@ -453,10 +453,10 @@
                             <argLine>
                                 -Duser.timezone=UTC
                                 -Dfile.encoding=UTF-8
-                                -Ddruid.test.config.dockerIp=${env.DOCKER_IP}
+                                -Ddruid.test.config.dockerIp=127.0.0.1
                                 -Ddruid.test.config.hadoopDir=${env.HADOOP_DIR}
                                 -Ddruid.test.config.extraDatasourceNameSuffix=${extra.datasource.name.suffix}
-                                -Ddruid.zk.service.host=${env.DOCKER_IP}
+                                -Ddruid.zk.service.host=127.0.0.1
                                 -Ddruid.client.https.trustStorePath=client_tls/truststore.jks
                                 -Ddruid.client.https.trustStorePassword=druid123
                                 -Ddruid.client.https.keyStorePath=client_tls/client.jks

@@ -1,3 +1,22 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.apache.druid.testing.guice;
 
 import com.google.common.collect.ImmutableList;
@@ -8,6 +27,8 @@ import org.apache.druid.guice.GuiceInjectors;
 import org.apache.druid.guice.IndexingServiceFirehoseModule;
 import org.apache.druid.guice.IndexingServiceInputSourceModule;
 import org.apache.druid.initialization.Initialization;
+import org.apache.druid.testing.IntegrationTestingConfig;
+import org.apache.druid.testing.utils.DruidClusterAdminClient;
 import org.junit.jupiter.api.extension.*;
 
 import javax.inject.Qualifier;
@@ -23,7 +44,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toSet;
 import static org.junit.platform.commons.support.AnnotationSupport.findRepeatableAnnotations;
 
-public final class GuiceExtension implements TestInstancePostProcessor, ParameterResolver {
+public final class DruidGuiceExtension implements TestInstancePostProcessor, ParameterResolver {
 
   private static final ConcurrentMap<Set<? extends Class<?>>, Injector> INJECTOR_CACHE = new ConcurrentHashMap<>();
 
@@ -47,12 +68,13 @@ public final class GuiceExtension implements TestInstancePostProcessor, Paramete
     return INJECTOR;
   }
 
-  public GuiceExtension() {}
+  public DruidGuiceExtension() {}
 
   @Override
   public void postProcessTestInstance(Object testInstance, ExtensionContext context)
   {
     getOrCreateInjector(context).ifPresent(injector -> injector.injectMembers(testInstance));
+    waitUntilInstanceReady();
   }
 
   /**
@@ -79,7 +101,7 @@ public final class GuiceExtension implements TestInstancePostProcessor, Paramete
 
     Set<Class<? extends Module>> moduleTypes = getModuleTypes(context.getElement().get());
     context.getParent()
-        .map(GuiceExtension::getContextModuleTypes)
+        .map(DruidGuiceExtension::getContextModuleTypes)
         .ifPresent(moduleTypes::removeAll);
 
     return moduleTypes;
@@ -100,7 +122,7 @@ public final class GuiceExtension implements TestInstancePostProcessor, Paramete
     while (context.isPresent() && (hasAnnotatedElement(context) || hasParent(context))) {
       context
           .flatMap(ExtensionContext::getElement)
-          .map(GuiceExtension::getModuleTypes)
+          .map(DruidGuiceExtension::getModuleTypes)
           .ifPresent(contextModuleTypes::addAll);
       context = context.flatMap(ExtensionContext::getParent);
     }
@@ -216,5 +238,17 @@ public final class GuiceExtension implements TestInstancePostProcessor, Paramete
     Class<? extends Annotation> annotationType = annotation.annotationType();
     return annotationType.isAnnotationPresent(Qualifier.class)
         || annotationType.isAnnotationPresent(BindingAnnotation.class);
+  }
+
+  public void waitUntilInstanceReady(){
+    DruidClusterAdminClient druidClusterAdminClient = getInjector().getInstance(DruidClusterAdminClient.class);
+    IntegrationTestingConfig config = getInjector().getInstance(IntegrationTestingConfig.class);
+    druidClusterAdminClient.waitUntilCoordinatorReady();
+    druidClusterAdminClient.waitUntilIndexerReady();
+    druidClusterAdminClient.waitUntilBrokerReady();
+    String routerHost = config.getRouterUrl();
+    if (null != routerHost) {
+      druidClusterAdminClient.waitUntilRouterReady();
+    }
   }
 }

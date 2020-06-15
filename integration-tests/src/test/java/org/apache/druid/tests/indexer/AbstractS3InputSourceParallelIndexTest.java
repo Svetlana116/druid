@@ -46,6 +46,7 @@ public abstract class AbstractS3InputSourceParallelIndexTest extends AbstractITB
   private static final String WIKIPEDIA_DATA_3 = "wikipedia_index_data3.json";
 
 
+  @Override
   public Stream<? extends Arguments> provideArguments (ExtensionContext extensionContext)  {
     return Stream.of(
             Arguments.of(new Pair<>(INPUT_SOURCE_URIS_KEY,

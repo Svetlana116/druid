@@ -35,6 +35,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({TYPE, METHOD})
 @Inherited
 @ExtendWith(DruidGuiceExtension.class)
-public @interface IncludeModules {
-  IncludeModule[] value();
+public @interface IncludeModules
+{
+    IncludeModule[] value();
 }

@@ -28,7 +28,6 @@ import org.junit.jupiter.api.TestInstance;
 
 import static org.apache.druid.tests.TestGroup.KAFKA_INDEX_SLOW;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(KAFKA_INDEX_SLOW)
 @IncludeModule(GuiceTestModule.class)
 public class ITKafkaIndexingServiceNonTransactionalSerializedTest extends AbstractKafkaIndexingServiceTest

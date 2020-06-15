@@ -46,142 +46,139 @@ import static org.junit.platform.commons.support.AnnotationSupport.findRepeatabl
 
 public final class DruidGuiceExtension implements TestInstancePostProcessor, ParameterResolver {
 
-  private static final ConcurrentMap<Set<? extends Class<?>>, Injector> INJECTOR_CACHE = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<Set<? extends Class<?>>, Injector> INJECTOR_CACHE = new ConcurrentHashMap<>();
 
-  private static final Module MODULE = new DruidTestModule();
-  private static final Injector INJECTOR = Initialization.makeInjectorWithModules(
-          GuiceInjectors.makeStartupInjector(),
-          getModules()
-  );
-
-  private static List<? extends Module> getModules()
-  {
-    return ImmutableList.of(
-            new DruidTestModule(),
-            new IndexingServiceFirehoseModule(),
-            new IndexingServiceInputSourceModule()
+    private static final Module MODULE = new DruidTestModule();
+    private static final Injector INJECTOR = Initialization.makeInjectorWithModules(
+            GuiceInjectors.makeStartupInjector(),
+            getModules()
     );
-  }
 
-  public static Injector getInjector()
-  {
-    return INJECTOR;
-  }
-
-  public DruidGuiceExtension() {}
-
-  @Override
-  public void postProcessTestInstance(Object testInstance, ExtensionContext context)
-  {
-    getOrCreateInjector(context).ifPresent(injector -> injector.injectMembers(testInstance));
-    waitUntilInstanceReady();
-  }
-
-  /**
-   * Returns an injector for the given context if and only if the given context has an {@link
-   * ExtensionContext#getElement() annotated element}.
-   */
-  private static Optional<Injector> getOrCreateInjector(ExtensionContext context)
-  {
-    if (!context.getElement().isPresent()) {
-      return Optional.empty();
-    }
-    return Optional.of(getInjector());
-  }
-
-
-  /**
-   * Returns module types that are introduced for the first time by the given context (they do not
-   * appear in an enclosing context).
-   */
-  private static Set<Class<? extends Module>> getNewModuleTypes(ExtensionContext context) {
-    if (!context.getElement().isPresent()) {
-      return Collections.emptySet();
+    private static List<? extends Module> getModules() {
+        return ImmutableList.of(
+                new DruidTestModule(),
+                new IndexingServiceFirehoseModule(),
+                new IndexingServiceInputSourceModule()
+        );
     }
 
-    Set<Class<? extends Module>> moduleTypes = getModuleTypes(context.getElement().get());
-    context.getParent()
-        .map(DruidGuiceExtension::getContextModuleTypes)
-        .ifPresent(moduleTypes::removeAll);
-
-    return moduleTypes;
-  }
-
-  private static Set<Class<? extends Module>> getContextModuleTypes(ExtensionContext context) {
-    return getContextModuleTypes(Optional.of(context));
-  }
-
-  /**
-   * Returns module types that are present on the given context or any of its enclosing contexts.
-   */
-  private static Set<Class<? extends Module>> getContextModuleTypes(
-      Optional<ExtensionContext> context) {
-    // TODO: Cache?
-
-    Set<Class<? extends Module>> contextModuleTypes = new LinkedHashSet<>();
-    while (context.isPresent() && (hasAnnotatedElement(context) || hasParent(context))) {
-      context
-          .flatMap(ExtensionContext::getElement)
-          .map(DruidGuiceExtension::getModuleTypes)
-          .ifPresent(contextModuleTypes::addAll);
-      context = context.flatMap(ExtensionContext::getParent);
+    public static Injector getInjector() {
+        return INJECTOR;
     }
 
-    return contextModuleTypes;
-  }
-
-  private static boolean hasAnnotatedElement(Optional<ExtensionContext> context) {
-    return context.flatMap(ExtensionContext::getElement).isPresent();
-  }
-
-  private static boolean hasParent(Optional<ExtensionContext> context) {
-    return context.flatMap(ExtensionContext::getParent).isPresent();
-  }
-
-  private static Set<Class<? extends Module>> getModuleTypes(AnnotatedElement element) {
-    return
-        findRepeatableAnnotations(element, IncludeModule.class)
-            .stream()
-            .map(IncludeModule::value)
-            .flatMap(Stream::of)
-            .collect(toSet());
-  }
-
-  @Override
-  public boolean supportsParameter(ParameterContext parameterContext,
-      ExtensionContext extensionContext)
-      throws ParameterResolutionException {
-    Parameter parameter = parameterContext.getParameter();
-    if (getBindingAnnotations(parameter).size() > 1) {
-      return false;
+    public DruidGuiceExtension() {
     }
 
-    Key<?> key = getKey(
-        extensionContext.getTestClass(),
-        parameter);
-    Optional<Injector> optInjector = getInjectorForParameterResolution(extensionContext);
-    return optInjector.filter(injector -> {
+    @Override
+    public void postProcessTestInstance(Object testInstance, ExtensionContext context) {
+        getOrCreateInjector(context).ifPresent(injector -> injector.injectMembers(testInstance));
+        waitUntilInstanceReady();
+    }
 
-      // Do not bind String without explicit bindings.
-      if (key.equals(Key.get(String.class)) && injector.getExistingBinding(key) == null) {
-        return false;
-      }
+    /**
+     * Returns an injector for the given context if and only if the given context has an {@link
+     * ExtensionContext#getElement() annotated element}.
+     */
+    private static Optional<Injector> getOrCreateInjector(ExtensionContext context) {
+        if (!context.getElement().isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.of(getInjector());
+    }
 
-      try {
-        injector.getInstance(key);
-        return true;
-      } catch (ConfigurationException | ProvisionException e) {
-        // If we throw a ParameterResolutionException here instead of returning false, we'll block
-        // other ParameterResolvers from being able to work.
-        return false;
-      }
-    }).isPresent();
-  }
 
-  @Override
-  public Object resolveParameter(ParameterContext parameterContext,
-                                 ExtensionContext extensionContext)
-      throws ParameterResolutionException {
+    /**
+     * Returns module types that are introduced for the first time by the given context (they do not
+     * appear in an enclosing context).
+     */
+    private static Set<Class<? extends Module>> getNewModuleTypes(ExtensionContext context) {
+        if (!context.getElement().isPresent()) {
+            return Collections.emptySet();
+        }
+
+        Set<Class<? extends Module>> moduleTypes = getModuleTypes(context.getElement().get());
+        context.getParent()
+                .map(DruidGuiceExtension::getContextModuleTypes)
+                .ifPresent(moduleTypes::removeAll);
+
+        return moduleTypes;
+    }
+
+    private static Set<Class<? extends Module>> getContextModuleTypes(ExtensionContext context) {
+        return getContextModuleTypes(Optional.of(context));
+    }
+
+    /**
+     * Returns module types that are present on the given context or any of its enclosing contexts.
+     */
+    private static Set<Class<? extends Module>> getContextModuleTypes(
+            Optional<ExtensionContext> context) {
+        // TODO: Cache?
+
+        Set<Class<? extends Module>> contextModuleTypes = new LinkedHashSet<>();
+        while (context.isPresent() && (hasAnnotatedElement(context) || hasParent(context))) {
+            context
+                    .flatMap(ExtensionContext::getElement)
+                    .map(DruidGuiceExtension::getModuleTypes)
+                    .ifPresent(contextModuleTypes::addAll);
+            context = context.flatMap(ExtensionContext::getParent);
+        }
+
+        return contextModuleTypes;
+    }
+
+    private static boolean hasAnnotatedElement(Optional<ExtensionContext> context) {
+        return context.flatMap(ExtensionContext::getElement).isPresent();
+    }
+
+    private static boolean hasParent(Optional<ExtensionContext> context) {
+        return context.flatMap(ExtensionContext::getParent).isPresent();
+    }
+
+    private static Set<Class<? extends Module>> getModuleTypes(AnnotatedElement element) {
+        return
+                findRepeatableAnnotations(element, IncludeModule.class)
+                        .stream()
+                        .map(IncludeModule::value)
+                        .flatMap(Stream::of)
+                        .collect(toSet());
+    }
+
+    @Override
+    public boolean supportsParameter(ParameterContext parameterContext,
+                                     ExtensionContext extensionContext)
+            throws ParameterResolutionException {
+        Parameter parameter = parameterContext.getParameter();
+        if (getBindingAnnotations(parameter).size() > 1) {
+            return false;
+        }
+
+        Key<?> key = getKey(
+                extensionContext.getTestClass(),
+                parameter);
+        Optional<Injector> optInjector = getInjectorForParameterResolution(extensionContext);
+        return optInjector.filter(injector -> {
+
+            // Do not bind String without explicit bindings.
+            if (key.equals(Key.get(String.class)) && injector.getExistingBinding(key) == null) {
+                return false;
+            }
+
+            try {
+                injector.getInstance(key);
+                return true;
+            } catch (ConfigurationException | ProvisionException e) {
+                // If we throw a ParameterResolutionException here instead of returning false, we'll block
+                // other ParameterResolvers from being able to work.
+                return false;
+            }
+        }).isPresent();
+    }
+
+    @Override
+    public Object resolveParameter(ParameterContext parameterContext,
+                                   ExtensionContext extensionContext)
+            throws ParameterResolutionException {
 //    Parameter parameter = parameterContext.getParameter();
 //    Key<?> key = getKey(extensionContext.getTestClass(), parameter);
 //    Injector injector = getInjectorForParameterResolution(extensionContext)
@@ -192,63 +189,63 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
 //                    extensionContext.getDisplayName())));
 //
 //    return injector.getInstance(key);
-    return null;
-  }
-
-  /**
-   * Wrap {@link #getOrCreateInjector(ExtensionContext)} and rethrow exceptions as {@link
-   * ParameterResolutionException}.
-   */
-  private static Optional<Injector> getInjectorForParameterResolution(
-      ExtensionContext extensionContext) throws ParameterResolutionException {
-    return getOrCreateInjector(extensionContext);
-  }
-
-  private static Key<?> getKey(Optional<Class<?>> containingElement, Parameter parameter) {
-    Class<?> clazz =
-        containingElement.orElseGet(() -> parameter.getDeclaringExecutable().getDeclaringClass());
-    TypeToken<?> classType = TypeToken.of(clazz);
-    Type resolvedType = classType.resolveType(parameter.getParameterizedType()).getType();
-
-    Optional<Key<?>> key =
-        getOnlyBindingAnnotation(parameter).map(annotation -> Key.get(resolvedType, annotation));
-    return key.orElse(Key.get(resolvedType));
-  }
-
-  /**
-   * @throws IllegalArgumentException if the given element has more than one binding
-   *     annotation.
-   */
-  private static Optional<? extends Annotation> getOnlyBindingAnnotation(AnnotatedElement element) {
-    return Optional.ofNullable(Iterables.getOnlyElement(getBindingAnnotations(element), null));
-  }
-
-  private static List<Annotation> getBindingAnnotations(AnnotatedElement element) {
-    List<Annotation> annotations = new ArrayList<>();
-    for (Annotation annotation : element.getAnnotations()) {
-      if (isBindingAnnotation(annotation)) {
-        annotations.add(annotation);
-      }
+        return null;
     }
 
-    return annotations;
-  }
-
-  private static boolean isBindingAnnotation(Annotation annotation) {
-    Class<? extends Annotation> annotationType = annotation.annotationType();
-    return annotationType.isAnnotationPresent(Qualifier.class)
-        || annotationType.isAnnotationPresent(BindingAnnotation.class);
-  }
-
-  public void waitUntilInstanceReady(){
-    DruidClusterAdminClient druidClusterAdminClient = getInjector().getInstance(DruidClusterAdminClient.class);
-    IntegrationTestingConfig config = getInjector().getInstance(IntegrationTestingConfig.class);
-    druidClusterAdminClient.waitUntilCoordinatorReady();
-    druidClusterAdminClient.waitUntilIndexerReady();
-    druidClusterAdminClient.waitUntilBrokerReady();
-    String routerHost = config.getRouterUrl();
-    if (null != routerHost) {
-      druidClusterAdminClient.waitUntilRouterReady();
+    /**
+     * Wrap {@link #getOrCreateInjector(ExtensionContext)} and rethrow exceptions as {@link
+     * ParameterResolutionException}.
+     */
+    private static Optional<Injector> getInjectorForParameterResolution(
+            ExtensionContext extensionContext) throws ParameterResolutionException {
+        return getOrCreateInjector(extensionContext);
     }
-  }
+
+    private static Key<?> getKey(Optional<Class<?>> containingElement, Parameter parameter) {
+        Class<?> clazz =
+                containingElement.orElseGet(() -> parameter.getDeclaringExecutable().getDeclaringClass());
+        TypeToken<?> classType = TypeToken.of(clazz);
+        Type resolvedType = classType.resolveType(parameter.getParameterizedType()).getType();
+
+        Optional<Key<?>> key =
+                getOnlyBindingAnnotation(parameter).map(annotation -> Key.get(resolvedType, annotation));
+        return key.orElse(Key.get(resolvedType));
+    }
+
+    /**
+     * @throws IllegalArgumentException if the given element has more than one binding
+     *                                  annotation.
+     */
+    private static Optional<? extends Annotation> getOnlyBindingAnnotation(AnnotatedElement element) {
+        return Optional.ofNullable(Iterables.getOnlyElement(getBindingAnnotations(element), null));
+    }
+
+    private static List<Annotation> getBindingAnnotations(AnnotatedElement element) {
+        List<Annotation> annotations = new ArrayList<>();
+        for (Annotation annotation : element.getAnnotations()) {
+            if (isBindingAnnotation(annotation)) {
+                annotations.add(annotation);
+            }
+        }
+
+        return annotations;
+    }
+
+    private static boolean isBindingAnnotation(Annotation annotation) {
+        Class<? extends Annotation> annotationType = annotation.annotationType();
+        return annotationType.isAnnotationPresent(Qualifier.class)
+                || annotationType.isAnnotationPresent(BindingAnnotation.class);
+    }
+
+    public void waitUntilInstanceReady() {
+        DruidClusterAdminClient druidClusterAdminClient = getInjector().getInstance(DruidClusterAdminClient.class);
+        IntegrationTestingConfig config = getInjector().getInstance(IntegrationTestingConfig.class);
+        druidClusterAdminClient.waitUntilCoordinatorReady();
+        druidClusterAdminClient.waitUntilIndexerReady();
+        druidClusterAdminClient.waitUntilBrokerReady();
+        String routerHost = config.getRouterUrl();
+        if (null != routerHost) {
+            druidClusterAdminClient.waitUntilRouterReady();
+        }
+    }
 }

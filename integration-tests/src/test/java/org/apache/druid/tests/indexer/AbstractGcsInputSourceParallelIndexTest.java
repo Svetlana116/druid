@@ -24,14 +24,17 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.java.util.common.StringUtils;
-import org.testng.annotations.DataProvider;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import java.io.Closeable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-public abstract class AbstractGcsInputSourceParallelIndexTest extends AbstractITBatchIndexTest
+public abstract class AbstractGcsInputSourceParallelIndexTest extends AbstractITBatchIndexTest implements ArgumentsProvider
 {
   private static final String INDEX_TASK = "/indexer/wikipedia_cloud_index_task.json";
   private static final String INDEX_QUERIES_RESOURCE = "/indexer/wikipedia_index_queries.json";
@@ -42,30 +45,29 @@ public abstract class AbstractGcsInputSourceParallelIndexTest extends AbstractIT
   private static final String WIKIPEDIA_DATA_2 = "wikipedia_index_data2.json";
   private static final String WIKIPEDIA_DATA_3 = "wikipedia_index_data3.json";
 
-  @DataProvider
-  public static Object[][] resources()
+  @Override
+  public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext)
   {
-    return new Object[][]{
-        {new Pair<>(INPUT_SOURCE_URIS_KEY,
+    return Stream.of(
+            Arguments.of(new Pair<>(INPUT_SOURCE_URIS_KEY,
                     ImmutableList.of(
-                        "gs://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_1,
-                        "gs://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_2,
-                        "gs://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_3
+                            "gs://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_1,
+                            "gs://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_2,
+                            "gs://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_3
                     )
-        )},
-        {new Pair<>(INPUT_SOURCE_PREFIXES_KEY,
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PREFIXES_KEY,
                     ImmutableList.of(
-                        "gs://%%BUCKET%%/%%PATH%%"
+                            "gs://%%BUCKET%%/%%PATH%%"
                     )
-        )},
-        {new Pair<>(INPUT_SOURCE_OBJECTS_KEY,
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_OBJECTS_KEY,
                     ImmutableList.of(
-                        ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_1),
-                        ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_2),
-                        ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_3)
+                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_1),
+                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_2),
+                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_3)
                     )
-        )}
-    };
+            )));
   }
 
   void doTest(Pair<String, List> gcsInputSource) throws Exception

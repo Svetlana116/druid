@@ -22,8 +22,10 @@ package org.apache.druid.tests.indexer;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -37,12 +39,13 @@ import java.util.List;
  * 3) Provide -Doverride.config.path=<PATH_TO_FILE> with Azure credentials/configs set. See
  *    integration-tests/docker/environment-configs/override-examples/azure for env vars to provide.
  */
-@Test(groups = TestGroup.AZURE_DEEP_STORAGE)
+@Tag(TestGroup.AZURE_DEEP_STORAGE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITAzureToAzureParallelIndexTest extends AbstractAzureInputSourceParallelIndexTest
 {
-  @Test(dataProvider = "resources")
-  public void testAzureIndexData(Pair<String, List> azureInputSource) throws Exception
+  @ParameterizedTest
+  @ArgumentsSource(AbstractAzureInputSourceParallelIndexTest.class)
+  void testAzureIndexData(Pair<String, List> azureInputSource) throws Exception
   {
     doTest(azureInputSource);
   }

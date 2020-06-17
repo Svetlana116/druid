@@ -21,13 +21,16 @@ package org.apache.druid.tests.indexer;
 
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
 
-@Test(groups = {TestGroup.BATCH_INDEX, TestGroup.QUICKSTART_COMPATIBLE})
+@Tag(TestGroup.BATCH_INDEX)
+@Tag(TestGroup.QUICKSTART_COMPATIBLE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITTransformTest extends AbstractITBatchIndexTest
 {
@@ -42,7 +45,7 @@ public class ITTransformTest extends AbstractITBatchIndexTest
   private static final String REINDEX_DATASOURCE = "wikipedia_reindex_test";
 
   @Test
-  public void testIndexAndReIndexWithTransformSpec() throws IOException
+  void testIndexAndReIndexWithTransformSpec() throws IOException
   {
     final String reindexDatasourceWithDruidInputSource = REINDEX_DATASOURCE + "-druidInputSource";
 
@@ -67,8 +70,9 @@ public class ITTransformTest extends AbstractITBatchIndexTest
     }
   }
 
-  @Test(enabled = false)
-  public void testIndexAndReIndexUsingIngestSegmentWithTransforms() throws IOException
+  @Disabled
+  @Test
+  void testIndexAndReIndexUsingIngestSegmentWithTransforms() throws IOException
   {
     // TODO: re-instate this test when https://github.com/apache/druid/issues/9591 is fixed
     // Move the re-index step into testIndexAndReIndexWithTransformSpec for faster tests!
@@ -94,8 +98,9 @@ public class ITTransformTest extends AbstractITBatchIndexTest
     }
   }
 
-  @Test(enabled = false)
-  public void testIndexWithFirehoseAndTransforms() throws IOException
+  @Disabled
+  @Test
+  void testIndexWithFirehoseAndTransforms() throws IOException
   {
     // TODO: re-instate this test when https://github.com/apache/druid/issues/9589 is fixed
     final String indexDatasource = INDEX_DATASOURCE + "-firehose";

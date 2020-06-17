@@ -28,6 +28,7 @@ import org.apache.druid.tests.indexer.AbstractKinesisIndexingServiceTest;
 import org.apache.druid.tests.indexer.AbstractStreamIndexingTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.KINESIS_DATA_FORMAT)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKinesisIndexingServiceDataFormatTest extends AbstractKinesisIndexingServiceTest

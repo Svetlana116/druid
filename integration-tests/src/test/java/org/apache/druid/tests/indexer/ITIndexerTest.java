@@ -21,12 +21,14 @@ package org.apache.druid.tests.indexer;
 
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.io.Closeable;
 
-@Test(groups = {TestGroup.BATCH_INDEX, TestGroup.QUICKSTART_COMPATIBLE})
+@Tag(TestGroup.BATCH_INDEX)
+@Tag(TestGroup.QUICKSTART_COMPATIBLE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITIndexerTest extends AbstractITBatchIndexTest
 {
@@ -46,7 +48,7 @@ public class ITIndexerTest extends AbstractITBatchIndexTest
   private static final String REINDEX_DATASOURCE = "wikipedia_reindex_test";
 
   @Test
-  public void testIndexData() throws Exception
+  void testIndexData() throws Exception
   {
     final String reindexDatasource = REINDEX_DATASOURCE + "-testIndexData";
     final String reindexDatasourceWithDruidInputSource = REINDEX_DATASOURCE + "-testIndexData-druidInputSource";
@@ -79,7 +81,7 @@ public class ITIndexerTest extends AbstractITBatchIndexTest
   }
 
   @Test
-  public void testReIndexDataWithTimestamp() throws Exception
+  void testReIndexDataWithTimestamp() throws Exception
   {
     final String reindexDatasource = REINDEX_DATASOURCE + "-testReIndexDataWithTimestamp";
     final String reindexDatasourceWithDruidInputSource = REINDEX_DATASOURCE + "-testReIndexDataWithTimestamp-druidInputSource";

@@ -31,15 +31,18 @@ import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
 import org.apache.druid.tests.TestGroup;
-import org.testng.annotations.BeforeSuite;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-@Test(groups = TestGroup.QUERY)
+@TestInstance (TestInstance.Lifecycle.PER_CLASS)
+@Tag(TestGroup.QUERY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITNestedQueryPushDownTest extends AbstractIndexerTest
 {
@@ -62,14 +65,14 @@ public class ITNestedQueryPushDownTest extends AbstractIndexerTest
 
   private String fullDatasourceName;
 
-  @BeforeSuite
-  public void setFullDatasourceName()
+  @BeforeAll
+  void setFullDatasourceName()
   {
     fullDatasourceName = WIKITICKER_DATA_SOURCE + config.getExtraDatasourceNameSuffix();
   }
 
   @Test
-  public void testIndexData()
+  void testIndexData()
   {
     try {
       loadData();

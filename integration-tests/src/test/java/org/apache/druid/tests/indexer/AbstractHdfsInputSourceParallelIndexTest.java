@@ -23,39 +23,41 @@ import com.google.common.collect.ImmutableList;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.java.util.common.StringUtils;
-import org.testng.annotations.DataProvider;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import java.io.Closeable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-public abstract class AbstractHdfsInputSourceParallelIndexTest extends AbstractITBatchIndexTest
+public abstract class AbstractHdfsInputSourceParallelIndexTest extends AbstractITBatchIndexTest implements ArgumentsProvider
 {
   private static final String INDEX_TASK = "/indexer/wikipedia_cloud_index_task.json";
   private static final String INDEX_QUERIES_RESOURCE = "/indexer/wikipedia_index_queries.json";
   private static final String INPUT_SOURCE_PATHS_KEY = "paths";
 
-  @DataProvider
-  public static Object[][] resources()
+  @Override
+  public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext)
   {
-    return new Object[][]{
-        {new Pair<>(INPUT_SOURCE_PATHS_KEY,
+    return Stream.of(
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
                     "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
-        )},
-        {new Pair<>(INPUT_SOURCE_PATHS_KEY,
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
                     ImmutableList.of(
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
                     )
-        )},
-        {new Pair<>(INPUT_SOURCE_PATHS_KEY,
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
                     ImmutableList.of(
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data1%%FILE_EXTENSION%%",
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data2%%FILE_EXTENSION%%",
-                        "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data3%%FILE_EXTENSION%%"
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data1%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data2%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data3%%FILE_EXTENSION%%"
                     )
-        )}
-    };
+            )));
   }
 
   void doTest(Pair<String, List> hdfsInputSource, InputFormatDetails inputFormatDetails) throws Exception

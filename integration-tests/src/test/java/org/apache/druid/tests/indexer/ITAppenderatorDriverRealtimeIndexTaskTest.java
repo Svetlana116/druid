@@ -30,8 +30,9 @@ import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ServerDiscoveryUtil;
 import org.apache.druid.tests.TestGroup;
 import org.joda.time.DateTime;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
@@ -44,7 +45,7 @@ import java.util.Map;
 /**
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.
  */
-@Test(groups = TestGroup.REALTIME_INDEX)
+@Tag(TestGroup.REALTIME_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtimeIndexTaskTest
 {
@@ -58,7 +59,7 @@ public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtim
   private static final int EXPECTED_NUM_ROWS = 22;
 
   @Test
-  public void testRealtimeIndexTask()
+  void testRealtimeIndexTask()
   {
     doTest();
   }

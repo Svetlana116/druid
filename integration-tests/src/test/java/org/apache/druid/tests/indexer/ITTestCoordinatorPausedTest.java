@@ -25,8 +25,8 @@ import org.apache.druid.server.coordinator.CoordinatorDynamicConfig;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ITRetryUtil;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.io.Closeable;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +47,7 @@ public class ITTestCoordinatorPausedTest extends AbstractITBatchIndexTest
   CoordinatorResourceTestClient coordinatorClient;
 
   @Test
-  public void testCoordinatorPause() throws Exception
+  void testCoordinatorPause() throws Exception
   {
     try (
         final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix())

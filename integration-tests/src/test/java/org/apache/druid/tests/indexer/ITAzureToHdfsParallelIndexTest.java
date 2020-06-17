@@ -22,8 +22,10 @@ package org.apache.druid.tests.indexer;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -39,12 +41,13 @@ import java.util.List;
  *    integration-tests/docker/environment-configs/override-examples/hdfs for env vars to provide.
  * 4) Run the test with -Dstart.hadoop.docker=true in the mvn command
  */
-@Test(groups = TestGroup.HDFS_DEEP_STORAGE)
+@Tag(TestGroup.HDFS_DEEP_STORAGE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITAzureToHdfsParallelIndexTest extends AbstractAzureInputSourceParallelIndexTest
 {
-  @Test(dataProvider = "resources")
-  public void testAzureIndexData(Pair<String, List> azureInputSource) throws Exception
+  @ParameterizedTest
+  @ArgumentsSource(AbstractAzureInputSourceParallelIndexTest.class)
+  void testAzureIndexData(Pair<String, List> azureInputSource) throws Exception
   {
     doTest(azureInputSource);
   }

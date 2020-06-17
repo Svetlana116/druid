@@ -21,11 +21,14 @@ package org.apache.druid.tests.indexer;
 
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
-import org.testng.annotations.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
-@Test(groups = TestGroup.KINESIS_INDEX)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag(TestGroup.KINESIS_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKinesisIndexingServiceSerializedTest extends AbstractKinesisIndexingServiceTest
 {
@@ -35,8 +38,8 @@ public class ITKinesisIndexingServiceSerializedTest extends AbstractKinesisIndex
     return "kinesis_serialized";
   }
 
-  @BeforeClass
-  public void beforeClass() throws Exception
+  @BeforeAll
+  void beforeClass() throws Exception
   {
     doBeforeClass();
   }
@@ -45,7 +48,7 @@ public class ITKinesisIndexingServiceSerializedTest extends AbstractKinesisIndex
    * This test must be run individually since the test affect and modify the state of the Druid cluster
    */
   @Test
-  public void testKinesisIndexDataWithLosingCoordinator() throws Exception
+  void testKinesisIndexDataWithLosingCoordinator() throws Exception
   {
     doTestIndexDataWithLosingCoordinator(null);
   }
@@ -54,7 +57,7 @@ public class ITKinesisIndexingServiceSerializedTest extends AbstractKinesisIndex
    * This test must be run individually since the test affect and modify the state of the Druid cluster
    */
   @Test
-  public void testKinesisIndexDataWithLosingOverlord() throws Exception
+  void testKinesisIndexDataWithLosingOverlord() throws Exception
   {
     doTestIndexDataWithLosingOverlord(null);
   }
@@ -63,7 +66,7 @@ public class ITKinesisIndexingServiceSerializedTest extends AbstractKinesisIndex
    * This test must be run individually since the test affect and modify the state of the Druid cluster
    */
   @Test
-  public void testKinesisIndexDataWithLosingHistorical() throws Exception
+  void testKinesisIndexDataWithLosingHistorical() throws Exception
   {
     doTestIndexDataWithLosingHistorical(null);
   }

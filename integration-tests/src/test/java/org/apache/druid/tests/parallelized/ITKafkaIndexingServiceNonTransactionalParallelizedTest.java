@@ -25,8 +25,10 @@ import org.apache.druid.tests.indexer.AbstractKafkaIndexingServiceTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.testng.annotations.Guice;
 
+@TestInstance (TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.KAFKA_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKafkaIndexingServiceNonTransactionalParallelizedTest extends AbstractKafkaIndexingServiceTest

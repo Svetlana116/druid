@@ -22,8 +22,10 @@ package org.apache.druid.tests.indexer;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.util.List;
 
@@ -36,12 +38,13 @@ import java.util.List;
  *    You will also need to include "druid-hdfs-storage" to druid_extensions_loadList in this file.
  * 3) Provide -Dresource.file.dir.path=<PATH_TO_FOLDER> with folder that contains GOOGLE_APPLICATION_CREDENTIALS file
  */
-@Test(groups = TestGroup.GCS_DEEP_STORAGE)
+@Tag(TestGroup.GCS_DEEP_STORAGE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITHdfsToGcsParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {
-  @Test(dataProvider = "resources")
-  public void testHdfsIndexData(Pair<String, List> hdfsInputSource) throws Exception
+  @ParameterizedTest
+  @ArgumentsSource(AbstractHdfsInputSourceParallelIndexTest.class)
+  void testHdfsIndexData(Pair<String, List> hdfsInputSource) throws Exception
   {
     doTest(hdfsInputSource, InputFormatDetails.JSON);
   }

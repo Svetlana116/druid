@@ -42,9 +42,11 @@ import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.joda.time.DateTime;
-import org.testng.annotations.BeforeSuite;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +56,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-@Test(groups = TestGroup.QUERY)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag(TestGroup.QUERY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITUnionQueryTest extends AbstractIndexerTest
 {
@@ -77,14 +80,14 @@ public class ITUnionQueryTest extends AbstractIndexerTest
 
   private String fullDatasourceName;
 
-  @BeforeSuite
-  public void setFullDatasourceName()
+  @BeforeAll
+  void setFullDatasourceName()
   {
     fullDatasourceName = UNION_DATASOURCE + config.getExtraDatasourceNameSuffix();
   }
 
   @Test
-  public void testUnionQuery() throws IOException
+  void testUnionQuery() throws IOException
   {
     final int numTasks = 3;
     final Closer closer = Closer.create();

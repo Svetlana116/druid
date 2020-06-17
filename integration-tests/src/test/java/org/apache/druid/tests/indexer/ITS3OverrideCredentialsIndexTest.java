@@ -26,9 +26,10 @@ import org.apache.druid.indexer.TaskStatusPlus;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
-import org.testng.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.io.Closeable;
 import java.util.UUID;
@@ -47,7 +48,7 @@ import java.util.function.Function;
  *    access to the bucket and path specified in #1. The credentials that does have access to the bucket and path
  *    specified in #1 should be set to the env variable OVERRIDE_S3_ACCESS_KEY and OVERRIDE_S3_SECRET_KEY
  */
-@Test(groups = TestGroup.S3_INGESTION)
+@Tag(TestGroup.S3_INGESTION)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
 {
@@ -66,7 +67,7 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
       );
 
   @Test
-  public void testS3WithValidOverrideCredentialsIndexDataShouldSucceed() throws Exception
+  void testS3WithValidOverrideCredentialsIndexDataShouldSucceed() throws Exception
   {
     final String indexDatasource = "wikipedia_index_test_" + UUID.randomUUID();
     try (
@@ -135,7 +136,7 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
   }
 
   @Test
-  public void testS3WithoutOverrideCredentialsIndexDataShouldFailed() throws Exception
+  void testS3WithoutOverrideCredentialsIndexDataShouldFailed() throws Exception
   {
     final String indexDatasource = "wikipedia_index_test_" + UUID.randomUUID();
     try {
@@ -187,9 +188,9 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
       // Index task is expected to fail as the default S3 Credentials in Druid's config (druid.s3.accessKey and
       // druid.s3.secretKey should not have access to the bucket and path for our data. (Refer to the setup instruction
       // at the top of this test class.
-      Assert.assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
-      Assert.assertNotNull(taskStatusPlus.getErrorMsg());
-      Assert.assertTrue(
+      Assertions.assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
+      Assertions.assertNotNull(taskStatusPlus.getErrorMsg());
+      Assertions.assertTrue(
           taskStatusPlus.getErrorMsg().contains("com.amazonaws.services.s3.model.AmazonS3Exception"),
           "Expect task to fail with AmazonS3Exception");
     }
@@ -200,7 +201,7 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
   }
 
   @Test
-  public void testS3WithInvalidOverrideCredentialsIndexDataShouldFailed() throws Exception
+  void testS3WithInvalidOverrideCredentialsIndexDataShouldFailed() throws Exception
   {
     final String indexDatasource = "wikipedia_index_test_" + UUID.randomUUID();
     try {
@@ -266,9 +267,9 @@ public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
       indexer.waitUntilTaskFails(taskID);
       TaskStatusPlus taskStatusPlus = indexer.getTaskStatus(taskID);
       // Index task is expected to fail as the overrided s3 access key and s3 secret key cannot be null
-      Assert.assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
-      Assert.assertNotNull(taskStatusPlus.getErrorMsg());
-      Assert.assertTrue(
+      Assertions.assertEquals(taskStatusPlus.getStatusCode(), TaskState.FAILED);
+      Assertions.assertNotNull(taskStatusPlus.getErrorMsg());
+      Assertions.assertTrue(
           taskStatusPlus.getErrorMsg().contains("IllegalArgumentException: Access key cannot be null"),
           "Expect task to fail with IllegalArgumentException: Access key cannot be null");
     }

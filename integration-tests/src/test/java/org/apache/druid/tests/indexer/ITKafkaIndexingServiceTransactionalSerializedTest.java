@@ -21,11 +21,14 @@ package org.apache.druid.tests.indexer;
 
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
-import org.testng.annotations.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
-@Test(groups = TestGroup.TRANSACTIONAL_KAFKA_INDEX_SLOW)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag(TestGroup.TRANSACTIONAL_KAFKA_INDEX_SLOW)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKafkaIndexingServiceTransactionalSerializedTest extends AbstractKafkaIndexingServiceTest
 {
@@ -35,8 +38,8 @@ public class ITKafkaIndexingServiceTransactionalSerializedTest extends AbstractK
     return "kafka_transactional_serialized";
   }
 
-  @BeforeClass
-  public void beforeClass() throws Exception
+  @BeforeAll
+  void beforeClass() throws Exception
   {
     doBeforeClass();
   }
@@ -45,7 +48,7 @@ public class ITKafkaIndexingServiceTransactionalSerializedTest extends AbstractK
    * This test must be run individually since the test affect and modify the state of the Druid cluster
    */
   @Test
-  public void testKafkaIndexDataWithLosingCoordinator() throws Exception
+  void testKafkaIndexDataWithLosingCoordinator() throws Exception
   {
     doTestIndexDataWithLosingCoordinator(true);
   }
@@ -54,7 +57,7 @@ public class ITKafkaIndexingServiceTransactionalSerializedTest extends AbstractK
    * This test must be run individually since the test affect and modify the state of the Druid cluster
    */
   @Test
-  public void testKafkaIndexDataWithLosingOverlord() throws Exception
+  void testKafkaIndexDataWithLosingOverlord() throws Exception
   {
     doTestIndexDataWithLosingOverlord(true);
   }
@@ -63,7 +66,7 @@ public class ITKafkaIndexingServiceTransactionalSerializedTest extends AbstractK
    * This test must be run individually since the test affect and modify the state of the Druid cluster
    */
   @Test
-  public void testKafkaIndexDataWithLosingHistorical() throws Exception
+  void testKafkaIndexDataWithLosingHistorical() throws Exception
   {
     doTestIndexDataWithLosingHistorical(true);
   }

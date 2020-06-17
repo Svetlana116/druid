@@ -28,9 +28,10 @@ import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.tests.TestGroup;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -39,7 +40,8 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@Test(groups = {TestGroup.OTHER_INDEX, TestGroup.QUICKSTART_COMPATIBLE})
+@Tag(TestGroup.OTHER_INDEX)
+@Tag(TestGroup.QUICKSTART_COMPATIBLE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITCompactionTaskTest extends AbstractIndexerTest
 {
@@ -57,20 +59,20 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
 
   private String fullDatasourceName;
 
-  @BeforeMethod
-  public void setFullDatasourceName(Method method)
+  @BeforeEach
+  void setFullDatasourceName(Method method)
   {
     fullDatasourceName = INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix() + "-" + method.getName();
   }
 
   @Test
-  public void testCompaction() throws Exception
+  void testCompaction() throws Exception
   {
     loadDataAndCompact(INDEX_TASK, INDEX_QUERIES_RESOURCE);
   }
 
   @Test
-  public void testCompactionWithTimestampDimension() throws Exception
+  void testCompactionWithTimestampDimension() throws Exception
   {
     loadDataAndCompact(INDEX_TASK_WITH_TIMESTAMP, INDEX_QUERIES_RESOURCE);
   }

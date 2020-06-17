@@ -22,11 +22,12 @@ package org.apache.druid.tests.parallelized;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractKafkaIndexingServiceTest;
-import org.testng.annotations.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
-@Test(groups = TestGroup.TRANSACTIONAL_KAFKA_INDEX)
+@Tag(TestGroup.TRANSACTIONAL_KAFKA_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKafkaIndexingServiceTransactionalParallelizedTest extends AbstractKafkaIndexingServiceTest
 {
@@ -36,8 +37,8 @@ public class ITKafkaIndexingServiceTransactionalParallelizedTest extends Abstrac
     return "kafka_transactional_parallelized";
   }
 
-  @BeforeClass
-  public void beforeClass() throws Exception
+  @BeforeAll
+  void beforeClass() throws Exception
   {
     doBeforeClass();
   }
@@ -47,7 +48,7 @@ public class ITKafkaIndexingServiceTransactionalParallelizedTest extends Abstrac
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKafkaIndexDataWithStartStopSupervisor() throws Exception
+  void testKafkaIndexDataWithStartStopSupervisor() throws Exception
   {
     doTestIndexDataWithStartStopSupervisor(true);
   }
@@ -57,7 +58,7 @@ public class ITKafkaIndexingServiceTransactionalParallelizedTest extends Abstrac
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKafkaIndexDataWithKafkaReshardSplit() throws Exception
+  void testKafkaIndexDataWithKafkaReshardSplit() throws Exception
   {
     doTestIndexDataWithStreamReshardSplit(true);
   }

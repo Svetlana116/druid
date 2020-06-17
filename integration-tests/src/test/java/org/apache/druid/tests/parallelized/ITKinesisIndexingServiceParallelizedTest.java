@@ -22,11 +22,12 @@ package org.apache.druid.tests.parallelized;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractKinesisIndexingServiceTest;
-import org.testng.annotations.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
-@Test(groups = TestGroup.KINESIS_INDEX)
+@Tag(TestGroup.KINESIS_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisIndexingServiceTest
 {
@@ -36,8 +37,8 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
     return "kinesis_parallelized";
   }
 
-  @BeforeClass
-  public void beforeClass() throws Exception
+  @BeforeAll
+  void beforeClass() throws Exception
   {
     doBeforeClass();
   }
@@ -47,7 +48,7 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKinesisIndexDataWithStartStopSupervisor() throws Exception
+  void testKinesisIndexDataWithStartStopSupervisor() throws Exception
   {
     doTestIndexDataWithStartStopSupervisor(null);
   }
@@ -57,7 +58,7 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKinesisIndexDataWithKinesisReshardSplit() throws Exception
+  void testKinesisIndexDataWithKinesisReshardSplit() throws Exception
   {
     doTestIndexDataWithStreamReshardSplit(null);
   }
@@ -67,7 +68,7 @@ public class ITKinesisIndexingServiceParallelizedTest extends AbstractKinesisInd
    * and supervisor maintained and scoped within this test only
    */
   @Test
-  public void testKinesisIndexDataWithKinesisReshardMerge() throws Exception
+  void testKinesisIndexDataWithKinesisReshardMerge() throws Exception
   {
     doTestIndexDataWithStreamReshardMerge();
   }

@@ -25,11 +25,12 @@ import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
 import org.apache.druid.tests.TestGroup;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
-@Test(groups = TestGroup.QUERY)
+@Tag(TestGroup.QUERY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITTwitterQueryTest
 {
@@ -40,8 +41,8 @@ public class ITTwitterQueryTest
   @Inject
   private TestQueryHelper queryHelper;
 
-  @BeforeMethod
-  public void before()
+  @BeforeEach
+  void before()
   {
     // ensure that the twitter segments are loaded completely
     ITRetryUtil.retryUntilTrue(
@@ -50,7 +51,7 @@ public class ITTwitterQueryTest
   }
 
   @Test
-  public void testTwitterQueriesFromFile() throws Exception
+  void testTwitterQueriesFromFile() throws Exception
   {
     queryHelper.testQueriesFromFile(TWITTER_QUERIES_RESOURCE, 2);
   }

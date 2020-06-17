@@ -33,17 +33,18 @@ import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
 import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
-@Test(groups = TestGroup.QUERY)
+@Tag(TestGroup.QUERY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITWikipediaQueryTest
 {
@@ -61,8 +62,8 @@ public class ITWikipediaQueryTest
   @Inject
   private IntegrationTestingConfig config;
 
-  @BeforeMethod
-  public void before() throws Exception
+  @BeforeEach
+  void before() throws Exception
   {
 
     // ensure that wikipedia segments are loaded completely
@@ -78,13 +79,13 @@ public class ITWikipediaQueryTest
   }
 
   @Test
-  public void testWikipediaQueriesFromFile() throws Exception
+  void testWikipediaQueriesFromFile() throws Exception
   {
     queryHelper.testQueriesFromFile(WIKIPEDIA_QUERIES_RESOURCE, 2);
   }
 
   @Test
-  public void testQueryLaningLaneIsLimited() throws Exception
+  void testQueryLaningLaneIsLimited() throws Exception
   {
     // the broker is configured with a manually defined query lane, 'one' with limit 1
     //  -Ddruid.query.scheduler.laning.type=manual
@@ -109,14 +110,14 @@ public class ITWikipediaQueryTest
       StatusResponseHolder status = future.get();
       if (status.getStatus().getCode() == QueryCapacityExceededException.STATUS_CODE) {
         limited++;
-        Assert.assertTrue(status.getContent().contains(QueryCapacityExceededException.makeLaneErrorMessage("one", 1)));
+        Assertions.assertTrue(status.getContent().contains(QueryCapacityExceededException.makeLaneErrorMessage("one", 1)));
       } else if (status.getStatus().getCode() == HttpResponseStatus.OK.getCode()) {
         success++;
       }
     }
 
-    Assert.assertTrue(success > 0);
-    Assert.assertTrue(limited > 0);
+    Assertions.assertTrue(success > 0);
+    Assertions.assertTrue(limited > 0);
 
     // test another to make sure we can still issue one query at a time
     StatusResponseHolder followUp = queryClient.queryAsync(
@@ -124,18 +125,18 @@ public class ITWikipediaQueryTest
         getQueryBuilder().build()
     ).get();
 
-    Assert.assertEquals(HttpResponseStatus.OK.getCode(), followUp.getStatus().getCode());
+    Assertions.assertEquals(HttpResponseStatus.OK.getCode(), followUp.getStatus().getCode());
 
     StatusResponseHolder andAnother = queryClient.queryAsync(
         queryHelper.getQueryURL(config.getBrokerUrl()),
         getQueryBuilder().build()
     ).get();
 
-    Assert.assertEquals(HttpResponseStatus.OK.getCode(), andAnother.getStatus().getCode());
+    Assertions.assertEquals(HttpResponseStatus.OK.getCode(), andAnother.getStatus().getCode());
   }
 
   @Test
-  public void testQueryLaningWithNoLane() throws Exception
+  void testQueryLaningWithNoLane() throws Exception
   {
     // the broker is configured with a manually defined query lane, 'one' with limit 1
     //  -Ddruid.query.scheduler.laning.type=manual
@@ -164,8 +165,8 @@ public class ITWikipediaQueryTest
       }
     }
 
-    Assert.assertTrue(success > 0);
-    Assert.assertEquals(limited, 0);
+    Assertions.assertTrue(success > 0);
+    Assertions.assertEquals(limited, 0);
 
   }
 

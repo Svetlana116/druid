@@ -26,11 +26,12 @@ import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.SqlTestQueryHelper;
 import org.apache.druid.tests.TestGroup;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
-@Test(groups = TestGroup.QUERY)
+@Tag(TestGroup.QUERY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITSystemTableQueryTest
 {
@@ -45,8 +46,8 @@ public class ITSystemTableQueryTest
   @Inject
   IntegrationTestingConfig config;
 
-  @BeforeMethod
-  public void before()
+  @BeforeEach
+  void before()
   {
     // ensure that wikipedia segments are loaded completely
     ITRetryUtil.retryUntilTrue(
@@ -60,7 +61,7 @@ public class ITSystemTableQueryTest
   }
 
   @Test
-  public void testSystemTableQueries()
+  void testSystemTableQueries()
   {
     try {
       this.queryHelper.testQueriesFromFile(SYSTEM_QUERIES_RESOURCE, 2);

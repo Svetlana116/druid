@@ -36,6 +36,7 @@ import org.apache.druid.tests.indexer.AbstractITBatchIndexTest;
 import org.apache.druid.tests.indexer.AbstractIndexerTest;
 import org.apache.druid.timeline.DataSegment;
 import org.joda.time.Period;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Tag(TestGroup.OTHER_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
@@ -189,7 +189,7 @@ public class ITAutoCompactionTest extends AbstractIndexerTest
       verifyQuery(INDEX_QUERIES_RESOURCE);
       verifySegmentsCompacted(1, MAX_ROWS_PER_SEGMENT_COMPACTED);
       checkCompactionIntervals(intervalsBeforeCompaction);
-      assertEquals(compactionResource.getCompactionProgress(fullDatasourceName).get("remainingSegmentSize"), "14312");
+      Assertions.assertEquals(compactionResource.getCompactionProgress(fullDatasourceName).get("remainingSegmentSize"), "14312");
       // Run compaction again to compact the remaining day
       // Remaining day compacted (1 new segment). Now both days compacted (6 total)
       forceTriggerAutoCompaction(6);
@@ -255,14 +255,14 @@ public class ITAutoCompactionTest extends AbstractIndexerTest
         foundDataSourceCompactionConfig = dataSourceCompactionConfig;
       }
     }
-    assertNotNull(foundDataSourceCompactionConfig);
-    assertEquals(foundDataSourceCompactionConfig.getMaxRowsPerSegment(), maxRowsPerSegment);
-    assertEquals(foundDataSourceCompactionConfig.getSkipOffsetFromLatest(), skipOffsetFromLatest);
+    Assertions.assertNotNull(foundDataSourceCompactionConfig);
+    Assertions.assertEquals(foundDataSourceCompactionConfig.getMaxRowsPerSegment(), maxRowsPerSegment);
+    Assertions.assertEquals(foundDataSourceCompactionConfig.getSkipOffsetFromLatest(), skipOffsetFromLatest);
 
     foundDataSourceCompactionConfig = compactionResource.getDataSourceCompactionConfig(fullDatasourceName);
-    assertNotNull(foundDataSourceCompactionConfig);
-    assertEquals(foundDataSourceCompactionConfig.getMaxRowsPerSegment(), maxRowsPerSegment);
-    assertEquals(foundDataSourceCompactionConfig.getSkipOffsetFromLatest(), skipOffsetFromLatest);
+    Assertions.assertNotNull(foundDataSourceCompactionConfig);
+    Assertions.assertEquals(foundDataSourceCompactionConfig.getMaxRowsPerSegment(), maxRowsPerSegment);
+    Assertions.assertEquals(foundDataSourceCompactionConfig.getSkipOffsetFromLatest(), skipOffsetFromLatest);
   }
 
   private void deleteCompactionConfig() throws Exception
@@ -277,7 +277,7 @@ public class ITAutoCompactionTest extends AbstractIndexerTest
         foundDataSourceCompactionConfig = dataSourceCompactionConfig;
       }
     }
-    assertNull(foundDataSourceCompactionConfig);
+    Assertions.assertNull(foundDataSourceCompactionConfig);
   }
 
   private void forceTriggerAutoCompaction(int numExpectedSegmentsAfterCompaction) throws Exception
@@ -324,13 +324,13 @@ public class ITAutoCompactionTest extends AbstractIndexerTest
         foundCompactedSegments.add(segment);
       }
     }
-    assertEquals(foundCompactedSegments.size(), expectedCompactedSegmentCount);
+    Assertions.assertEquals(foundCompactedSegments.size(), expectedCompactedSegmentCount);
     for (DataSegment compactedSegment : foundCompactedSegments) {
-      assertNotNull(compactedSegment.getLastCompactionState());
-      assertNotNull(compactedSegment.getLastCompactionState().getPartitionsSpec());
-      assertEquals(compactedSegment.getLastCompactionState().getPartitionsSpec().getMaxRowsPerSegment(),
+      Assertions.assertNotNull(compactedSegment.getLastCompactionState());
+      Assertions.assertNotNull(compactedSegment.getLastCompactionState().getPartitionsSpec());
+      Assertions.assertEquals(compactedSegment.getLastCompactionState().getPartitionsSpec().getMaxRowsPerSegment(),
                           expectedMaxRowsPerSegment);
-      assertEquals(compactedSegment.getLastCompactionState().getPartitionsSpec().getType(),
+      Assertions.assertEquals(compactedSegment.getLastCompactionState().getPartitionsSpec().getType(),
                           SecondaryPartitionType.LINEAR
       );
     }
@@ -341,7 +341,7 @@ public class ITAutoCompactionTest extends AbstractIndexerTest
     compactionResource.updateCompactionTaskSlot(compactionTaskSlotRatio, maxCompactionTaskSlots);
     // Verify that the compaction config is updated correctly.
     CoordinatorCompactionConfig coordinatorCompactionConfig = compactionResource.getCoordinatorCompactionConfigs();
-    assertEquals(coordinatorCompactionConfig.getCompactionTaskSlotRatio(), compactionTaskSlotRatio);
-    assertEquals(coordinatorCompactionConfig.getMaxCompactionTaskSlots(), maxCompactionTaskSlots);
+    Assertions.assertEquals(coordinatorCompactionConfig.getCompactionTaskSlotRatio(), compactionTaskSlotRatio);
+    Assertions.assertEquals(coordinatorCompactionConfig.getMaxCompactionTaskSlots(), maxCompactionTaskSlots);
   }
 }

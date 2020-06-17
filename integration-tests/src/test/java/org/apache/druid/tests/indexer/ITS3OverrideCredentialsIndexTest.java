@@ -25,7 +25,7 @@ import org.apache.druid.indexer.TaskState;
 import org.apache.druid.indexer.TaskStatusPlus;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.testng.Assert;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
@@ -47,7 +47,7 @@ import java.util.function.Function;
  *    access to the bucket and path specified in #1. The credentials that does have access to the bucket and path
  *    specified in #1 should be set to the env variable OVERRIDE_S3_ACCESS_KEY and OVERRIDE_S3_SECRET_KEY
  */
-@Test(groups = TestNGGroup.S3_INGESTION)
+@Test(groups = TestGroup.S3_INGESTION)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITS3OverrideCredentialsIndexTest extends AbstractITBatchIndexTest
 {

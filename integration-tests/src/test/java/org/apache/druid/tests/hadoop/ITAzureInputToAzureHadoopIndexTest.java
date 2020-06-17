@@ -20,9 +20,10 @@
 package org.apache.druid.tests.hadoop;
 
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 /**
  * IMPORTANT:
@@ -39,11 +40,12 @@ import org.testng.annotations.Test;
  *    integration-tests/docker/environment-configs/override-examples/hadoop/azure_to_azure for env vars to provide.
  * 4) Run the test with -Dstart.hadoop.docker=true -Dextra.datasource.name.suffix='' in the mvn command
  */
-@Test(groups = TestNGGroup.HADOOP_AZURE_TO_AZURE)
+@Tag(TestGroup.HADOOP_AZURE_TO_AZURE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITAzureInputToAzureHadoopIndexTest extends AbstractAzureInputHadoopIndexTest
 {
-  public void testGcsIndexData() throws Exception
+  @Test
+  void testGcsIndexData() throws Exception
   {
     doTest();
   }

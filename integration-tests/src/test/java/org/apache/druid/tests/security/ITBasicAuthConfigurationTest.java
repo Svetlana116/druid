@@ -46,13 +46,14 @@ import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.HttpUtil;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -65,7 +66,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-@Test(groups = TestNGGroup.SECURITY)
+@Tag(TestGroup.SECURITY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITBasicAuthConfigurationTest
 {
@@ -110,8 +111,8 @@ public class ITBasicAuthConfigurationTest
   @Inject
   private CoordinatorResourceTestClient coordinatorClient;
 
-  @BeforeMethod
-  public void before()
+  @BeforeEach
+  void before()
   {
     // ensure that auth_test segments are loaded completely, we use them for testing system schema tables
     ITRetryUtil.retryUntilTrue(
@@ -120,7 +121,7 @@ public class ITBasicAuthConfigurationTest
   }
 
   @Test
-  public void testSystemSchemaAccess() throws Exception
+  void testSystemSchemaAccess() throws Exception
   {
     HttpClient adminClient = new CredentialedHttpClient(
         new BasicCredentials("admin", "priest"),
@@ -361,7 +362,7 @@ public class ITBasicAuthConfigurationTest
   }
 
   @Test
-  public void testAuthConfiguration() throws Exception
+  void testAuthConfiguration() throws Exception
   {
     HttpClient adminClient = new CredentialedHttpClient(
         new BasicCredentials("admin", "priest"),
@@ -497,7 +498,7 @@ public class ITBasicAuthConfigurationTest
       statement.setMaxRows(450);
       String query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS";
       ResultSet resultSet = statement.executeQuery(query);
-      Assert.assertTrue(resultSet.next());
+      Assertions.assertTrue(resultSet.next());
       statement.close();
       connection.close();
     }
@@ -520,13 +521,13 @@ public class ITBasicAuthConfigurationTest
       statement.executeQuery(query);
     }
     catch (AvaticaSqlException ase) {
-      Assert.assertEquals(
+      Assertions.assertEquals(
           ase.getErrorMessage(),
           "Error while executing SQL \"SELECT * FROM INFORMATION_SCHEMA.COLUMNS\": Remote driver error: BasicSecurityAuthenticationException: User metadata store authentication failed username[admin]."
       );
       return;
     }
-    Assert.fail("Test failed, did not get AvaticaSqlException.");
+    Assertions.fail("Test failed, did not get AvaticaSqlException.");
   }
 
 
@@ -559,8 +560,8 @@ public class ITBasicAuthConfigurationTest
     String content = holder.getContent();
     Map<String, Boolean> loadStatus = jsonMapper.readValue(content, JacksonUtils.TYPE_REFERENCE_MAP_STRING_BOOLEAN);
 
-    Assert.assertNotNull(loadStatus.get("basic"));
-    Assert.assertTrue(loadStatus.get("basic"));
+    Assertions.assertNotNull(loadStatus.get("basic"));
+    Assertions.assertTrue(loadStatus.get("basic"));
 
     holder = HttpUtil.makeRequest(
         httpClient,
@@ -571,8 +572,8 @@ public class ITBasicAuthConfigurationTest
     content = holder.getContent();
     loadStatus = jsonMapper.readValue(content, JacksonUtils.TYPE_REFERENCE_MAP_STRING_BOOLEAN);
 
-    Assert.assertNotNull(loadStatus.get("basic"));
-    Assert.assertTrue(loadStatus.get("basic"));
+    Assertions.assertNotNull(loadStatus.get("basic"));
+    Assertions.assertTrue(loadStatus.get("basic"));
   }
 
   private void createUserAndRoleWithPermissions(
@@ -678,7 +679,7 @@ public class ITBasicAuthConfigurationTest
     if (isServerQuery) {
       responseMap = getServersWithoutCurrentSize(responseMap);
     }
-    Assert.assertEquals(responseMap, expectedResults);
+    Assertions.assertEquals(responseMap, expectedResults);
   }
 
   private void verifySystemSchemaQuery(
@@ -707,8 +708,8 @@ public class ITBasicAuthConfigurationTest
   ) throws Exception
   {
     StatusResponseHolder responseHolder = makeSQLQueryRequest(client, query, expectedErrorStatus);
-    Assert.assertEquals(responseHolder.getStatus(), expectedErrorStatus);
-    Assert.assertEquals(responseHolder.getContent(), expectedErrorMessage);
+    Assertions.assertEquals(responseHolder.getStatus(), expectedErrorStatus);
+    Assertions.assertEquals(responseHolder.getContent(), expectedErrorMessage);
   }
 
   /**

@@ -22,13 +22,14 @@ package org.apache.druid.tests.security;
 import com.google.inject.Inject;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.testng.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
-@Test(groups = TestNGGroup.SECURITY)
+@Tag(TestGroup.SECURITY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITCoordinatorOverlordProxyAuthTest
 {
@@ -36,9 +37,9 @@ public class ITCoordinatorOverlordProxyAuthTest
   CoordinatorResourceTestClient coordinatorClient;
   
   @Test
-  public void testProxyAuth()
+  void testProxyAuth()
   {
     HttpResponseStatus responseStatus = coordinatorClient.getProxiedOverlordScalingResponseStatus();
-    Assert.assertEquals(HttpResponseStatus.OK, responseStatus);
+    Assertions.assertEquals(HttpResponseStatus.OK, responseStatus);
   }
 }

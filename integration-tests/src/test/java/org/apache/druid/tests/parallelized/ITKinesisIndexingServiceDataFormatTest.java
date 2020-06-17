@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.apache.druid.guice.annotations.Json;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractKinesisIndexingServiceTest;
 import org.apache.druid.tests.indexer.AbstractStreamIndexingTest;
 import org.testng.annotations.BeforeClass;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Test(groups = TestNGGroup.KINESIS_DATA_FORMAT)
+@Test(groups = TestGroup.KINESIS_DATA_FORMAT)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKinesisIndexingServiceDataFormatTest extends AbstractKinesisIndexingServiceTest
 {

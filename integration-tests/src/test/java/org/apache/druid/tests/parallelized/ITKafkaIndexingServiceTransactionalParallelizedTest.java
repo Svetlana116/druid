@@ -20,13 +20,13 @@
 package org.apache.druid.tests.parallelized;
 
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractKafkaIndexingServiceTest;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
-@Test(groups = TestNGGroup.TRANSACTIONAL_KAFKA_INDEX)
+@Test(groups = TestGroup.TRANSACTIONAL_KAFKA_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKafkaIndexingServiceTransactionalParallelizedTest extends AbstractKafkaIndexingServiceTest
 {

@@ -31,7 +31,7 @@ import org.apache.druid.testing.clients.QueryResourceTestClient;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Future;
 
-@Test(groups = TestNGGroup.QUERY)
+@Test(groups = TestGroup.QUERY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITWikipediaQueryTest
 {

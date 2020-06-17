@@ -21,7 +21,7 @@ package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
@@ -40,7 +40,7 @@ import java.util.List;
  * 4) Provide -Dresource.file.dir.path=<PATH_TO_FOLDER> with folder that contains GOOGLE_APPLICATION_CREDENTIALS file
  * 5) Run the test with -Dstart.hadoop.docker=true in the mvn command
  */
-@Test(groups = TestNGGroup.HDFS_DEEP_STORAGE)
+@Test(groups = TestGroup.HDFS_DEEP_STORAGE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITGcsToHdfsParallelIndexTest extends AbstractGcsInputSourceParallelIndexTest
 {

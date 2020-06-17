@@ -42,13 +42,14 @@ import org.apache.druid.server.security.TLSUtils;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ITTLSCertificateChecker;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.joda.time.Duration;
-import org.testng.Assert;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.testng.annotations.Guice;
-import org.testng.annotations.Test;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -56,7 +57,7 @@ import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.URL;
 
-@Test(groups = TestNGGroup.SECURITY)
+@Tag(TestGroup.SECURITY)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITTLSTest
 {
@@ -88,7 +89,7 @@ public class ITTLSTest
 
 
   @Test
-  public void testPlaintextAccess()
+  void testPlaintextAccess()
   {
     LOG.info("---------Testing resource access without TLS---------");
     HttpClient adminClient = new CredentialedHttpClient(
@@ -105,7 +106,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void testTLSNodeAccess()
+  void testTLSNodeAccess()
   {
     LOG.info("---------Testing resource access with TLS enabled---------");
     HttpClient adminClient = new CredentialedHttpClient(
@@ -122,7 +123,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void testTLSNodeAccessWithIntermediate()
+  void testTLSNodeAccessWithIntermediate()
   {
     LOG.info("---------Testing TLS resource access with 3-part cert chain---------");
     HttpClient intermediateCertClient = makeCustomHttpClient(
@@ -139,7 +140,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithNoCert()
+  void checkAccessWithNoCert()
   {
     LOG.info("---------Testing TLS resource access without a certificate---------");
     HttpClient certlessClient = makeCertlessClient();
@@ -153,7 +154,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithWrongHostname()
+  void checkAccessWithWrongHostname()
   {
     LOG.info("---------Testing TLS resource access when client certificate has non-matching hostnames---------");
     HttpClient wrongHostnameClient = makeCustomHttpClient(
@@ -170,7 +171,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithWrongRoot()
+  void checkAccessWithWrongRoot()
   {
     LOG.info("---------Testing TLS resource access when client certificate is signed by a non-trusted root CA---------");
     HttpClient wrongRootClient = makeCustomHttpClient(
@@ -187,7 +188,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithRevokedCert()
+  void checkAccessWithRevokedCert()
   {
     LOG.info("---------Testing TLS resource access when client certificate has been revoked---------");
     HttpClient revokedClient = makeCustomHttpClient(
@@ -204,7 +205,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithExpiredCert()
+  void checkAccessWithExpiredCert()
   {
     LOG.info("---------Testing TLS resource access when client certificate has expired---------");
     HttpClient expiredClient = makeCustomHttpClient(
@@ -221,7 +222,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithNotCASignedCert()
+  void checkAccessWithNotCASignedCert()
   {
     LOG.info(
         "---------Testing TLS resource access when client certificate is signed by a non-CA intermediate cert---------");
@@ -239,7 +240,7 @@ public class ITTLSTest
   }
 
   @Test
-  public void checkAccessWithCustomCertificateChecks()
+  void checkAccessWithCustomCertificateChecks()
   {
     LOG.info("---------Testing TLS resource access with custom certificate checks---------");
     HttpClient wrongHostnameClient = makeCustomHttpClient(
@@ -448,7 +449,7 @@ public class ITTLSTest
         if (rootCause instanceof IOException && ("Broken pipe".equals(rootCause.getMessage())
                                                  || "Connection reset by peer".contains(rootCause.getMessage()))) {
           if (retries > MAX_CONNECTION_EXCEPTION_RETRIES) {
-            Assert.fail(StringUtils.format(
+            Assertions.fail(StringUtils.format(
                 "Broken pipe / connection reset retries exhausted, test failed, did not get %s.",
                 expectedException
             ));
@@ -458,15 +459,15 @@ public class ITTLSTest
           }
         }
 
-        Assert.assertTrue(
+        Assertions.assertTrue(
             expectedException.isInstance(rootCause),
             StringUtils.format("Expected %s but found %s instead.", expectedException, Throwables.getStackTraceAsString(rootCause))
         );
 
         if (useContainsMsgCheck) {
-          Assert.assertTrue(rootCause.getMessage().contains(expectedExceptionMsg));
+          Assertions.assertTrue(rootCause.getMessage().contains(expectedExceptionMsg));
         } else {
-          Assert.assertEquals(
+          Assertions.assertEquals(
               rootCause.getMessage(),
               expectedExceptionMsg
           );
@@ -475,7 +476,7 @@ public class ITTLSTest
         LOG.info("%s client [%s] request failed as expected when accessing [%s]", clientDesc, method, url);
         return;
       }
-      Assert.fail(StringUtils.format("Test failed, did not get %s.", expectedException));
+      Assertions.fail(StringUtils.format("Test failed, did not get %s.", expectedException));
     }
   }
 

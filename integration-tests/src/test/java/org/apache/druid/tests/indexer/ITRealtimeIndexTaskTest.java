@@ -28,7 +28,7 @@ import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.testing.clients.EventReceiverFirehoseTestClient;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
 import org.apache.druid.testing.utils.ServerDiscoveryUtil;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.joda.time.DateTime;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
@@ -44,7 +44,7 @@ import java.util.Map;
 /**
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.
  */
-@Test(groups = TestNGGroup.REALTIME_INDEX)
+@Test(groups = TestGroup.REALTIME_INDEX)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITRealtimeIndexTaskTest extends AbstractITRealtimeIndexTaskTest
 {

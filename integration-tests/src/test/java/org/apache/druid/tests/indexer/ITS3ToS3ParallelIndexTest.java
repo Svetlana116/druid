@@ -21,7 +21,7 @@ package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
@@ -37,7 +37,7 @@ import java.util.List;
  * 3) Provide -Doverride.config.path=<PATH_TO_FILE> with s3 credentials/configs set. See
  *    integration-tests/docker/environment-configs/override-examples/s3 for env vars to provide.
  */
-@Test(groups = TestNGGroup.S3_DEEP_STORAGE)
+@Test(groups = TestGroup.S3_DEEP_STORAGE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITS3ToS3ParallelIndexTest extends AbstractS3InputSourceParallelIndexTest
 {

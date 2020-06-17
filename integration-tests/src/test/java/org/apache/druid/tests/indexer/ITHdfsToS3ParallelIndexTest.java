@@ -21,7 +21,7 @@ package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
@@ -35,7 +35,7 @@ import java.util.List;
  *    integration-tests/docker/environment-configs/override-examples/s3 for env vars to provide.
  *    You will also need to include "druid-hdfs-storage" to druid_extensions_loadList in this file.
  */
-@Test(groups = TestNGGroup.S3_DEEP_STORAGE)
+@Test(groups = TestGroup.S3_DEEP_STORAGE)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITHdfsToS3ParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {

@@ -20,12 +20,12 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.testing.guice.DruidTestModuleFactory;
-import org.apache.druid.tests.TestNGGroup;
+import org.apache.druid.tests.TestGroup;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
-@Test(groups = TestNGGroup.TRANSACTIONAL_KAFKA_INDEX_SLOW)
+@Test(groups = TestGroup.TRANSACTIONAL_KAFKA_INDEX_SLOW)
 @Guice(moduleFactory = DruidTestModuleFactory.class)
 public class ITKafkaIndexingServiceTransactionalSerializedTest extends AbstractKafkaIndexingServiceTest
 {

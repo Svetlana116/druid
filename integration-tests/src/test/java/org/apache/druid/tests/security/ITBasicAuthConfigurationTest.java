@@ -42,7 +42,8 @@ import org.apache.druid.server.security.ResourceType;
 import org.apache.druid.sql.avatica.DruidAvaticaHandler;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.HttpUtil;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
@@ -53,7 +54,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testng.annotations.Guice;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -67,7 +67,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 @Tag(TestGroup.SECURITY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITBasicAuthConfigurationTest
 {
   private static final Logger LOG = new Logger(ITBasicAuthConfigurationTest.class);

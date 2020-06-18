@@ -22,7 +22,8 @@ package org.apache.druid.tests.parallelized;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.apache.druid.guice.annotations.Json;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractKinesisIndexingServiceTest;
 import org.apache.druid.tests.indexer.AbstractStreamIndexingTest;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testng.annotations.Guice;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.KINESIS_DATA_FORMAT)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITKinesisIndexingServiceDataFormatTest extends AbstractKinesisIndexingServiceTest
 {
   /**

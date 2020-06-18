@@ -20,12 +20,12 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.testng.annotations.Guice;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ import java.util.List;
  *    integration-tests/docker/environment-configs/override-examples/azure for env vars to provide.
  */
 @Tag(TestGroup.AZURE_DEEP_STORAGE)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITAzureToAzureParallelIndexTest extends AbstractAzureInputSourceParallelIndexTest
 {
   @ParameterizedTest

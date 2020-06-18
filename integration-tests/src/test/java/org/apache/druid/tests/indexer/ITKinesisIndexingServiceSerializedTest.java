@@ -19,17 +19,17 @@
 
 package org.apache.druid.tests.indexer;
 
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.testng.annotations.Guice;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.KINESIS_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITKinesisIndexingServiceSerializedTest extends AbstractKinesisIndexingServiceTest
 {
   @Override

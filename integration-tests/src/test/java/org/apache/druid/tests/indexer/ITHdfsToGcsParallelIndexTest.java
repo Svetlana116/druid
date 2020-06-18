@@ -20,12 +20,12 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.testng.annotations.Guice;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ import java.util.List;
  * 3) Provide -Dresource.file.dir.path=<PATH_TO_FOLDER> with folder that contains GOOGLE_APPLICATION_CREDENTIALS file
  */
 @Tag(TestGroup.GCS_DEEP_STORAGE)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITHdfsToGcsParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {
   @ParameterizedTest

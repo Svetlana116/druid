@@ -29,7 +29,8 @@ import org.apache.druid.server.coordinator.CoordinatorCompactionConfig;
 import org.apache.druid.server.coordinator.DataSourceCompactionConfig;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.clients.CompactionResourceTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractITBatchIndexTest;
@@ -40,7 +41,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testng.annotations.Guice;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Tag(TestGroup.OTHER_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITAutoCompactionTest extends AbstractIndexerTest
 {
   private static final Logger LOG = new Logger(ITAutoCompactionTest.class);

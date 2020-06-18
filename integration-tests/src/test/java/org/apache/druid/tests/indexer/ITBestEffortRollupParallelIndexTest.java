@@ -23,21 +23,21 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.indexer.partitions.PartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.testng.Assert;
-import org.testng.annotations.Guice;
 
 import java.io.Closeable;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 @Tag(TestGroup.BATCH_INDEX)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTest
 {
   // The task specs here use the MaxSizeSplitHintSpec with maxSplitSize of 1. This is to create splits per file.
@@ -51,7 +51,8 @@ public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTes
   private static final String INDEX_DRUID_INPUT_SOURCE_DATASOURCE = "wikipedia_parallel_druid_input_source_index_test";
   private static final String INDEX_DRUID_INPUT_SOURCE_TASK = "/indexer/wikipedia_parallel_druid_input_source_index_task.json";
 
-  public static Stream<Arguments> resources ()  {
+  public static Stream<Arguments> resources()
+  {
     return Stream.of(
             Arguments.of(new DynamicPartitionsSpec(null, null)
             ));

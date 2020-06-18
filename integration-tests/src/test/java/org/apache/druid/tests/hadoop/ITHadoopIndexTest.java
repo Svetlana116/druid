@@ -25,7 +25,8 @@ import org.apache.druid.indexer.partitions.HashedPartitionsSpec;
 import org.apache.druid.indexer.partitions.SingleDimensionPartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.logger.Logger;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractITBatchIndexTest;
 import org.junit.jupiter.api.Tag;
@@ -33,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testng.annotations.Guice;
 
 import java.io.Closeable;
 import java.util.UUID;
@@ -54,7 +54,7 @@ import java.util.stream.Stream;
  * 3) Run the test with -Dstart.hadoop.docker=true -Dextra.datasource.name.suffix='' in the mvn command
  */
 @Tag(TestGroup.HDFS_DEEP_STORAGE)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITHadoopIndexTest extends AbstractITBatchIndexTest
 {
   private static final Logger LOG = new Logger(ITHadoopIndexTest.class);

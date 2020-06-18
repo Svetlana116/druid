@@ -27,8 +27,6 @@ import org.apache.druid.java.util.common.StringUtils;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
-import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.testng.annotations.DataProvider;
 
 import java.io.Closeable;
 import java.util.List;

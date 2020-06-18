@@ -40,7 +40,8 @@ import org.apache.druid.java.util.http.client.response.StatusResponseHolder;
 import org.apache.druid.server.security.TLSCertificateChecker;
 import org.apache.druid.server.security.TLSUtils;
 import org.apache.druid.testing.IntegrationTestingConfig;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITTLSCertificateChecker;
 import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -49,7 +50,6 @@ import org.joda.time.Duration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testng.annotations.Guice;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
@@ -58,7 +58,7 @@ import java.io.IOException;
 import java.net.URL;
 
 @Tag(TestGroup.SECURITY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITTLSTest
 {
   private static final Logger LOG = new Logger(ITTLSTest.class);

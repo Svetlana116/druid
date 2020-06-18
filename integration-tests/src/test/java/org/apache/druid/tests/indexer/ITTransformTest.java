@@ -19,19 +19,19 @@
 
 package org.apache.druid.tests.indexer;
 
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.testng.annotations.Guice;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 @Tag(TestGroup.BATCH_INDEX)
 @Tag(TestGroup.QUICKSTART_COMPATIBLE)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITTransformTest extends AbstractITBatchIndexTest
 {
   private static final String INDEX_TASK_WITH_FIREHOSE = "/indexer/wikipedia_index_task_with_transform.json";

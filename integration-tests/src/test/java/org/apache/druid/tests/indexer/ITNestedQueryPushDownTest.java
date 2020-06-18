@@ -27,7 +27,8 @@ import org.apache.druid.java.util.common.logger.Logger;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.clients.ClientInfoResourceTestClient;
 import org.apache.druid.testing.clients.CoordinatorResourceTestClient;
-import org.apache.druid.testing.guice.DruidTestModuleFactory;
+import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITRetryUtil;
 import org.apache.druid.testing.utils.TestQueryHelper;
 import org.apache.druid.tests.TestGroup;
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.testng.annotations.Guice;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +43,7 @@ import java.nio.charset.StandardCharsets;
 
 @TestInstance (TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.QUERY)
-@Guice(moduleFactory = DruidTestModuleFactory.class)
+@IncludeModule(GuiceTestModule.class)
 public class ITNestedQueryPushDownTest extends AbstractIndexerTest
 {
   private static final String WIKITICKER_DATA_SOURCE = "wikiticker";

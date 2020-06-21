@@ -19,7 +19,7 @@
 
 package org.apache.druid.tests.hadoop;
 
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
  * 6) Run the test with -Dstart.hadoop.docker=true -Dextra.datasource.name.suffix='' in the mvn command
  */
 @Tag(TestGroup.HADOOP_GCS_TO_GCS)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITGcsInputToGcsHadoopIndexTest extends AbstractGcsInputHadoopIndexTest
 {
   @Test

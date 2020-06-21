@@ -19,7 +19,7 @@
 
 package org.apache.druid.tests.indexer;
 
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
@@ -29,7 +29,7 @@ import java.io.Closeable;
 
 @Tag(TestGroup.BATCH_INDEX)
 @Tag(TestGroup.QUICKSTART_COMPATIBLE)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITIndexerTest extends AbstractITBatchIndexTest
 {
   private static final String INDEX_TASK = "/indexer/wikipedia_index_task.json";

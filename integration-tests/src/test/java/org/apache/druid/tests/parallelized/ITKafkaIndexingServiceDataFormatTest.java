@@ -22,7 +22,7 @@ package org.apache.druid.tests.parallelized;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import org.apache.druid.guice.annotations.Json;
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractKafkaIndexingServiceTest;
@@ -42,7 +42,7 @@ import java.util.stream.Stream;
 
 @TestInstance (TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.KAFKA_DATA_FORMAT)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITKafkaIndexingServiceDataFormatTest extends AbstractKafkaIndexingServiceTest
 {
   private static final boolean TRANSACTION_DISABLED = false;

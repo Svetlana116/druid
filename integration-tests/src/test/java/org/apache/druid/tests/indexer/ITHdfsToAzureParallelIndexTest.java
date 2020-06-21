@@ -20,10 +20,11 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -37,8 +38,9 @@ import java.util.List;
  *    integration-tests/docker/environment-configs/override-examples/azure for env vars to provide.
  *    You will also need to include "druid-hdfs-storage" to druid_extensions_loadList in this file.
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.AZURE_DEEP_STORAGE)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITHdfsToAzureParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {
   @ParameterizedTest

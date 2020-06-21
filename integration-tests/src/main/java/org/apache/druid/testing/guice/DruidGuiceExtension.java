@@ -22,6 +22,7 @@ package org.apache.druid.testing.guice;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.TypeToken;
+import com.google.inject.AbstractModule;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
@@ -35,6 +36,7 @@ import org.apache.druid.initialization.Initialization;
 import org.apache.druid.testing.IntegrationTestingConfig;
 import org.apache.druid.testing.utils.DruidClusterAdminClient;
 import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.api.extension.ParameterResolutionException;
 import org.junit.jupiter.api.extension.ParameterResolver;
@@ -42,6 +44,7 @@ import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.junit.platform.commons.support.AnnotationSupport;
 
 import javax.inject.Qualifier;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Parameter;
@@ -57,8 +60,13 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
+
 public final class DruidGuiceExtension implements TestInstancePostProcessor, ParameterResolver
 {
+  private static final Namespace NAMESPACE =
+      Namespace.create("name", "falgout", "jeffrey", "testing", "junit", "guice");
+
   private static final ConcurrentMap<Set<? extends Class<?>>, Injector> INJECTOR_CACHE = new ConcurrentHashMap<>();
 
   private static final Module MODULE = new DruidTestModule();
@@ -81,10 +89,6 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
     return INJECTOR;
   }
 
-  public DruidGuiceExtension()
-  {
-  }
-
   @Override
   public void postProcessTestInstance(Object testInstance, ExtensionContext context)
   {
@@ -104,7 +108,6 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
     return Optional.of(getInjector());
   }
 
-
   /**
    * Returns module types that are introduced for the first time by the given context (they do not
    * appear in an enclosing context).
@@ -117,8 +120,8 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
 
     Set<Class<? extends Module>> moduleTypes = getModuleTypes(context.getElement().get());
     context.getParent()
-            .map(DruidGuiceExtension::getContextModuleTypes)
-            .ifPresent(moduleTypes::removeAll);
+        .map(DruidGuiceExtension::getContextModuleTypes)
+        .ifPresent(moduleTypes::removeAll);
 
     return moduleTypes;
   }
@@ -128,20 +131,20 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
     return getContextModuleTypes(Optional.of(context));
   }
 
-    /**
-     * Returns module types that are present on the given context or any of its enclosing contexts.
-     */
+  /**
+   * Returns module types that are present on the given context or any of its enclosing contexts.
+   */
   private static Set<Class<? extends Module>> getContextModuleTypes(
-          Optional<ExtensionContext> context)
+      Optional<ExtensionContext> context)
   {
-      // TODO: Cache?
+    // TODO: Cache?
 
     Set<Class<? extends Module>> contextModuleTypes = new LinkedHashSet<>();
     while (context.isPresent() && (hasAnnotatedElement(context) || hasParent(context))) {
       context
-              .flatMap(ExtensionContext::getElement)
-              .map(DruidGuiceExtension::getModuleTypes)
-              .ifPresent(contextModuleTypes::addAll);
+          .flatMap(ExtensionContext::getElement)
+          .map(DruidGuiceExtension::getModuleTypes)
+          .ifPresent(contextModuleTypes::addAll);
       context = context.flatMap(ExtensionContext::getParent);
     }
 
@@ -162,16 +165,16 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
   {
     return
             AnnotationSupport.findRepeatableAnnotations(element, IncludeModule.class)
-                    .stream()
-                    .map(IncludeModule::value)
-                    .flatMap(Stream::of)
-                    .collect(Collectors.toSet());
+            .stream()
+            .map(IncludeModule::value)
+            .flatMap(Stream::of)
+            .collect(Collectors.toSet());
   }
 
   @Override
   public boolean supportsParameter(ParameterContext parameterContext,
                                    ExtensionContext extensionContext)
-          throws ParameterResolutionException
+      throws ParameterResolutionException
   {
     Parameter parameter = parameterContext.getParameter();
     if (getBindingAnnotations(parameter).size() > 1) {
@@ -179,8 +182,8 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
     }
 
     Key<?> key = getKey(
-            extensionContext.getTestClass(),
-            parameter);
+        extensionContext.getTestClass(),
+        parameter);
     Optional<Injector> optInjector = getInjectorForParameterResolution(extensionContext);
     return optInjector.filter(injector -> {
 
@@ -204,7 +207,7 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
   @Override
   public Object resolveParameter(ParameterContext parameterContext,
                                  ExtensionContext extensionContext)
-          throws ParameterResolutionException
+      throws ParameterResolutionException
   {
     return null;
   }
@@ -214,7 +217,7 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
    * ParameterResolutionException}.
    */
   private static Optional<Injector> getInjectorForParameterResolution(
-          ExtensionContext extensionContext) throws ParameterResolutionException
+      ExtensionContext extensionContext) throws ParameterResolutionException
   {
     return getOrCreateInjector(extensionContext);
   }
@@ -222,18 +225,18 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
   private static Key<?> getKey(Optional<Class<?>> containingElement, Parameter parameter)
   {
     Class<?> clazz =
-            containingElement.orElseGet(() -> parameter.getDeclaringExecutable().getDeclaringClass());
+        containingElement.orElseGet(() -> parameter.getDeclaringExecutable().getDeclaringClass());
     TypeToken<?> classType = TypeToken.of(clazz);
     Type resolvedType = classType.resolveType(parameter.getParameterizedType()).getType();
 
     Optional<Key<?>> key =
-            getOnlyBindingAnnotation(parameter).map(annotation -> Key.get(resolvedType, annotation));
+        getOnlyBindingAnnotation(parameter).map(annotation -> Key.get(resolvedType, annotation));
     return key.orElse(Key.get(resolvedType));
   }
 
   /**
    * @throws IllegalArgumentException if the given element has more than one binding
-   *                                  annotation.
+   *     annotation.
    */
   private static Optional<? extends Annotation> getOnlyBindingAnnotation(AnnotatedElement element)
   {
@@ -256,7 +259,7 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
   {
     Class<? extends Annotation> annotationType = annotation.annotationType();
     return annotationType.isAnnotationPresent(Qualifier.class)
-            || annotationType.isAnnotationPresent(BindingAnnotation.class);
+        || annotationType.isAnnotationPresent(BindingAnnotation.class);
   }
 
   public void waitUntilInstanceReady()
@@ -269,6 +272,26 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
     String routerHost = config.getRouterUrl();
     if (null != routerHost) {
       druidClusterAdminClient.waitUntilRouterReady();
+    }
+  }
+
+  public static final class TestModule extends AbstractModule
+  {
+    static final String STRING = "abc";
+    static final int INT = 5;
+    static final Object OBJECT = new Object();
+    static final String QUALIFIED = "qualifying";
+    static final String BOUND = "binding";
+
+    @Override
+    protected void configure()
+    {
+      bind(String.class).toInstance(STRING);
+      bind(int.class).toInstance(INT);
+      bind(Object.class).toInstance(OBJECT);
+
+      bind(String.class).annotatedWith(SomeBindingAnnotation.class).toInstance(BOUND);
+      bind(String.class).annotatedWith(SomeQualifyingAnnotation.class).toInstance(QUALIFIED);
     }
   }
 }

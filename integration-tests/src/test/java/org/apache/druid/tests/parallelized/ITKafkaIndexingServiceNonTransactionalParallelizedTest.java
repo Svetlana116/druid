@@ -19,7 +19,7 @@
 
 package org.apache.druid.tests.parallelized;
 
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.apache.druid.tests.indexer.AbstractKafkaIndexingServiceTest;
@@ -30,7 +30,7 @@ import org.junit.jupiter.api.TestInstance;
 
 @TestInstance (TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.KAFKA_INDEX)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITKafkaIndexingServiceNonTransactionalParallelizedTest extends AbstractKafkaIndexingServiceTest
 {
   @Override

@@ -24,18 +24,23 @@ import org.apache.druid.indexer.partitions.HashedPartitionsSpec;
 import org.apache.druid.indexer.partitions.PartitionsSpec;
 import org.apache.druid.indexer.partitions.SingleDimensionPartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
-import org.testng.Assert;
-import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.Closeable;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
-@Test(groups = TestGroup.PERFECT_ROLLUP_PARALLEL_BATCH_INDEX)
-@IncludeModule(GuiceTestModule.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Tag(TestGroup.PERFECT_ROLLUP_PARALLEL_BATCH_INDEX)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITPerfectRollupParallelIndexTest extends AbstractITBatchIndexTest
 {
   // The task specs here use the MaxSizeSplitHintSpec with maxSplitSize of 1. This is to create splits per file.
@@ -47,17 +52,17 @@ public class ITPerfectRollupParallelIndexTest extends AbstractITBatchIndexTest
   private static final String INDEX_DRUID_INPUT_SOURCE_DATASOURCE = "wikipedia_parallel_druid_input_source_index_test";
   private static final String INDEX_DRUID_INPUT_SOURCE_TASK = "/indexer/wikipedia_parallel_druid_input_source_index_task.json";
 
-  @DataProvider
-  public static Object[][] resources()
+  public static Stream<Arguments> resources()
   {
-    return new Object[][]{
-        {new HashedPartitionsSpec(null, 2, null)},
-        {new SingleDimensionPartitionsSpec(2, null, "namespace", false)}
-    };
+    return Stream.of(
+            Arguments.of(new HashedPartitionsSpec(null, 2, null)),
+            Arguments.of(new SingleDimensionPartitionsSpec(2, null, "namespace", false))
+    );
   }
 
-  @Test(dataProvider = "resources")
-  public void testIndexData(PartitionsSpec partitionsSpec) throws Exception
+  @ParameterizedTest
+  @MethodSource("resources")
+  void testIndexData(PartitionsSpec partitionsSpec) throws Exception
   {
     try (
         final Closeable ignored1 = unloader(INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix());
@@ -65,7 +70,7 @@ public class ITPerfectRollupParallelIndexTest extends AbstractITBatchIndexTest
         final Closeable ignored3 = unloader(INDEX_DRUID_INPUT_SOURCE_DATASOURCE + config.getExtraDatasourceNameSuffix())
     ) {
       boolean forceGuaranteedRollup = partitionsSpec.isForceGuaranteedRollupCompatible();
-      Assert.assertTrue(forceGuaranteedRollup, "parititionSpec does not support perfect rollup");
+      Assertions.assertTrue(forceGuaranteedRollup, "parititionSpec does not support perfect rollup");
 
       final Function<String, String> rollupTransform = spec -> {
         try {

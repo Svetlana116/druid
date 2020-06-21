@@ -20,7 +20,7 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.logger.Logger;
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 import java.io.Closeable;
 
 @Tag(TestGroup.BATCH_INDEX)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITSystemTableBatchIndexTaskTest extends AbstractITBatchIndexTest
 {
   private static final Logger LOG = new Logger(ITSystemTableBatchIndexTaskTest.class);

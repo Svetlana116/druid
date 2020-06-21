@@ -20,10 +20,11 @@
 package org.apache.druid.tests.indexer;
 
 import org.apache.druid.java.util.common.Pair;
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
@@ -41,8 +42,9 @@ import java.util.List;
  *    integration-tests/docker/environment-configs/override-examples/hdfs for env vars to provide.
  * 4) Run the test with -Dstart.hadoop.docker=true in the mvn command
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.HDFS_DEEP_STORAGE)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITS3ToHdfsParallelIndexTest extends AbstractS3InputSourceParallelIndexTest
 {
   @ParameterizedTest

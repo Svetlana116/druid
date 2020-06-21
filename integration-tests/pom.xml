@@ -305,10 +305,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <scope>test</scope>
@@ -358,7 +354,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.testng.TestNG</mainClass>
+                            <mainClass>org.junit.jupiter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -451,7 +447,7 @@
                             <properties>
                                 <property>
                                     <name>testrunfactory</name>
-                                    <value>org.testng.DruidTestRunnerFactory</value>
+                                    <value>org.apache.druid.testing.guice.DruidGuiceExtension.TestModule</value>
                                 </property>
                             </properties>
                             <argLine>
@@ -469,9 +465,9 @@
                                 -Ddruid.client.https.keyStorePassword=druid123
                             </argLine>
                             <reportFormat>plain</reportFormat>  <!-- show elapsed time for each test -->
-                            <suiteXmlFiles>
-                                <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                            </suiteXmlFiles>
+<!--                            <suiteXmlFiles>-->
+<!--                                <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>-->
+<!--                            </suiteXmlFiles>-->
                         </configuration>
                     </plugin>
 
@@ -511,7 +507,7 @@
                             <properties>
                                 <property>
                                     <name>testrunfactory</name>
-                                    <value>org.testng.DruidTestRunnerFactory</value>
+                                    <value>org.apache.druid.testing.guice.GuiceTestModule</value>
                                 </property>
                             </properties>
                             <argLine>
@@ -526,9 +522,9 @@
                                 -Ddruid.client.https.keyManagerPassword=druid123
                                 -Ddruid.client.https.keyStorePassword=druid123
                             </argLine>
-                            <suiteXmlFiles>
-                                <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
-                            </suiteXmlFiles>
+<!--                            <suiteXmlFiles>-->
+<!--                                <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>-->
+<!--                            </suiteXmlFiles>-->
                         </configuration>
                     </plugin>
                     <plugin>

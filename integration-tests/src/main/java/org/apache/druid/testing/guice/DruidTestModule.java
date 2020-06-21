@@ -43,7 +43,7 @@ import org.apache.druid.testing.IntegrationTestingCuratorConfig;
 
 /**
  */
-public class DruidTestModule implements Module
+final class DruidTestModule implements Module
 {
   @Override
   public void configure(Binder binder)

@@ -23,21 +23,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.indexer.partitions.PartitionsSpec;
 import org.apache.druid.java.util.common.StringUtils;
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testng.Assert;
 
 import java.io.Closeable;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.BATCH_INDEX)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTest
 {
   // The task specs here use the MaxSizeSplitHintSpec with maxSplitSize of 1. This is to create splits per file.
@@ -68,7 +70,7 @@ public class ITBestEffortRollupParallelIndexTest extends AbstractITBatchIndexTes
         final Closeable ignored3 = unloader(INDEX_DRUID_INPUT_SOURCE_DATASOURCE + config.getExtraDatasourceNameSuffix())
     ) {
       boolean forceGuaranteedRollup = partitionsSpec.isForceGuaranteedRollupCompatible();
-      Assert.assertFalse(forceGuaranteedRollup, "parititionSpec does not support best-effort rollup");
+      Assertions.assertFalse(forceGuaranteedRollup, "parititionSpec does not support best-effort rollup");
 
       final Function<String, String> rollupTransform = spec -> {
         try {

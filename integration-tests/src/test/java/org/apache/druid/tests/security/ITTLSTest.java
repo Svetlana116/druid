@@ -29,18 +29,14 @@ import org.apache.druid.java.util.common.ISE;
 import org.apache.druid.java.util.common.StringUtils;
 import org.apache.druid.java.util.common.lifecycle.Lifecycle;
 import org.apache.druid.java.util.common.logger.Logger;
-import org.apache.druid.java.util.http.client.CredentialedHttpClient;
-import org.apache.druid.java.util.http.client.HttpClient;
-import org.apache.druid.java.util.http.client.HttpClientConfig;
-import org.apache.druid.java.util.http.client.HttpClientInit;
-import org.apache.druid.java.util.http.client.Request;
+import org.apache.druid.java.util.http.client.*;
 import org.apache.druid.java.util.http.client.auth.BasicCredentials;
 import org.apache.druid.java.util.http.client.response.StatusResponseHandler;
 import org.apache.druid.java.util.http.client.response.StatusResponseHolder;
 import org.apache.druid.server.security.TLSCertificateChecker;
 import org.apache.druid.server.security.TLSUtils;
 import org.apache.druid.testing.IntegrationTestingConfig;
-import org.apache.druid.testing.guice.GuiceTestModule;
+import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.testing.utils.ITTLSCertificateChecker;
 import org.apache.druid.tests.TestGroup;
@@ -58,7 +54,7 @@ import java.io.IOException;
 import java.net.URL;
 
 @Tag(TestGroup.SECURITY)
-@IncludeModule(GuiceTestModule.class)
+@IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITTLSTest
 {
   private static final Logger LOG = new Logger(ITTLSTest.class);

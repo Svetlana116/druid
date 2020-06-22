@@ -19,21 +19,16 @@
 
 package org.apache.druid.tests.indexer;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsSource;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * IMPORTANT:

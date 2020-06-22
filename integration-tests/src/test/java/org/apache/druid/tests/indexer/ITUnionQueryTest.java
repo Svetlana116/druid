@@ -43,10 +43,7 @@ import org.apache.druid.tests.TestGroup;
 import org.jboss.netty.handler.codec.http.HttpMethod;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.joda.time.DateTime;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,7 +77,7 @@ public class ITUnionQueryTest extends AbstractIndexerTest
 
   private String fullDatasourceName;
 
-  @BeforeAll
+  @BeforeEach
   void setFullDatasourceName()
   {
     fullDatasourceName = UNION_DATASOURCE + config.getExtraDatasourceNameSuffix();

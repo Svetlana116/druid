@@ -60,8 +60,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-
 public final class DruidGuiceExtension implements TestInstancePostProcessor, ParameterResolver
 {
   private static final Namespace NAMESPACE =
@@ -87,6 +85,11 @@ public final class DruidGuiceExtension implements TestInstancePostProcessor, Par
   public static Injector getInjector()
   {
     return INJECTOR;
+  }
+
+  public DruidGuiceExtension()
+  {
+
   }
 
   @Override

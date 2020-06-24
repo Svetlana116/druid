@@ -37,7 +37,6 @@ import org.junit.jupiter.api.TestInstance;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -62,9 +61,9 @@ public class ITCompactionTaskTest extends AbstractIndexerTest
   private String fullDatasourceName;
 
   @BeforeEach
-  void setFullDatasourceName(Method method)
+  void setFullDatasourceName()
   {
-    fullDatasourceName = INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix() + "-" + method.getName();
+    fullDatasourceName = INDEX_DATASOURCE + config.getExtraDatasourceNameSuffix();
   }
 
   @Test

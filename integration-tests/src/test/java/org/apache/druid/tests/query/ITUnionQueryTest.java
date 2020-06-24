@@ -48,6 +48,7 @@ import org.joda.time.DateTime;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +58,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.QUERY)
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITUnionQueryTest extends AbstractIndexerTest
@@ -81,13 +83,13 @@ public class ITUnionQueryTest extends AbstractIndexerTest
   private String fullDatasourceName;
 
   @BeforeAll
-  public void setFullDatasourceName()
+  void setFullDatasourceName()
   {
     fullDatasourceName = UNION_DATASOURCE + config.getExtraDatasourceNameSuffix();
   }
 
   @Test
-  public void testUnionQuery() throws IOException
+  void testUnionQuery() throws IOException
   {
     final int numTasks = 3;
     final Closer closer = Closer.create();

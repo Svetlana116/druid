@@ -30,6 +30,8 @@ import org.apache.druid.tests.indexer.AbstractStreamIndexingTest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,6 +45,7 @@ import java.util.stream.Stream;
 @TestInstance (TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.KAFKA_DATA_FORMAT)
 @IncludeModule(DruidGuiceExtension.TestModule.class)
+@Execution(ExecutionMode.CONCURRENT)
 public class ITKafkaIndexingServiceDataFormatTest extends AbstractKafkaIndexingServiceTest
 {
   private static final boolean TRANSACTION_DISABLED = false;

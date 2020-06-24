@@ -19,6 +19,8 @@
 
 package org.apache.druid.tests.indexer;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
@@ -26,9 +28,11 @@ import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * IMPORTANT:
@@ -47,8 +51,40 @@ import java.util.List;
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITS3ToHdfsParallelIndexTest extends AbstractS3InputSourceParallelIndexTest
 {
+  private static final String INPUT_SOURCE_URIS_KEY = "uris";
+  private static final String INPUT_SOURCE_PREFIXES_KEY = "prefixes";
+  private static final String INPUT_SOURCE_OBJECTS_KEY = "objects";
+  private static final String WIKIPEDIA_DATA_1 = "wikipedia_index_data1.json";
+  private static final String WIKIPEDIA_DATA_2 = "wikipedia_index_data2.json";
+  private static final String WIKIPEDIA_DATA_3 = "wikipedia_index_data3.json";
+
+  public static Stream<Arguments> provideArguments()
+  {
+    return Stream.of(
+            Arguments.of(new Pair<>(INPUT_SOURCE_URIS_KEY,
+                    ImmutableList.of(
+                            "s3://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_1,
+                            "s3://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_2,
+                            "s3://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_3
+                    )
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PREFIXES_KEY,
+                    ImmutableList.of(
+                            "s3://%%BUCKET%%/%%PATH%%"
+                    )
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_OBJECTS_KEY,
+                    ImmutableList.of(
+                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_1),
+                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_2),
+                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_3)
+                    )
+            )));
+  }
+
+
   @ParameterizedTest
-  @ArgumentsSource(AbstractS3InputSourceParallelIndexTest.class)
+  @MethodSource("provideArguments")
   void testS3IndexData(Pair<String, List> s3InputSource) throws Exception
   {
     doTest(s3InputSource);

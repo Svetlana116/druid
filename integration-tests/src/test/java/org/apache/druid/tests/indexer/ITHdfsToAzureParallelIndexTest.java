@@ -19,6 +19,7 @@
 
 package org.apache.druid.tests.indexer;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
@@ -26,9 +27,11 @@ import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * IMPORTANT:
@@ -43,8 +46,31 @@ import java.util.List;
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITHdfsToAzureParallelIndexTest extends AbstractHdfsInputSourceParallelIndexTest
 {
+  private static final String INPUT_SOURCE_PATHS_KEY = "paths";
+
+  private static Stream<Arguments> resources()
+  {
+    return Stream.of(
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
+                    "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
+                    ImmutableList.of(
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%"
+                    )
+            )),
+            Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,
+                    ImmutableList.of(
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data1%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data2%%FILE_EXTENSION%%",
+                            "hdfs://druid-it-hadoop:9000/batch_index%%FOLDER_SUFFIX%%/wikipedia_index_data3%%FILE_EXTENSION%%"
+                    )
+            )));
+  }
+
+
   @ParameterizedTest
-  @ArgumentsSource(AbstractHdfsInputSourceParallelIndexTest.class)
+  @MethodSource("resources")
   void testHdfsIndexData(Pair<String, List> hdfsInputSource) throws Exception
   {
     doTest(hdfsInputSource, InputFormatDetails.JSON);

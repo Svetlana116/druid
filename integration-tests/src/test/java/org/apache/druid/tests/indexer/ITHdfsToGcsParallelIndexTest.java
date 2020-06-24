@@ -49,7 +49,7 @@ public class ITHdfsToGcsParallelIndexTest extends AbstractHdfsInputSourceParalle
 {
   private static final String INPUT_SOURCE_PATHS_KEY = "paths";
 
-  public Stream<Arguments> resources()
+  public static Stream<Arguments> resources()
   {
     return Stream.of(
             Arguments.of(new Pair<>(INPUT_SOURCE_PATHS_KEY,

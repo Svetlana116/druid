@@ -24,6 +24,7 @@ import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 
 /**
@@ -41,6 +42,7 @@ import org.junit.jupiter.api.Test;
  *    integration-tests/docker/environment-configs/override-examples/hadoop/azure_to_hdfs for env vars to provide.
  * 4) Run the test with -Dstart.hadoop.docker=true -Dextra.datasource.name.suffix='' in the mvn command
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.HADOOP_AZURE_TO_HDFS)
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITAzureInputToHdfsHadoopIndexTest extends AbstractAzureInputHadoopIndexTest

@@ -19,56 +19,19 @@
 
 package org.apache.druid.tests.indexer;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.apache.druid.indexer.partitions.DynamicPartitionsSpec;
 import org.apache.druid.java.util.common.Pair;
 import org.apache.druid.java.util.common.StringUtils;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.ArgumentsProvider;
 
 import java.io.Closeable;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
-public abstract class AbstractAzureInputSourceParallelIndexTest extends AbstractITBatchIndexTest implements ArgumentsProvider
+public abstract class AbstractAzureInputSourceParallelIndexTest extends AbstractITBatchIndexTest
 {
   private static final String INDEX_TASK = "/indexer/wikipedia_cloud_index_task.json";
   private static final String INDEX_QUERIES_RESOURCE = "/indexer/wikipedia_index_queries.json";
-  private static final String INPUT_SOURCE_URIS_KEY = "uris";
-  private static final String INPUT_SOURCE_PREFIXES_KEY = "prefixes";
-  private static final String INPUT_SOURCE_OBJECTS_KEY = "objects";
-  private static final String WIKIPEDIA_DATA_1 = "wikipedia_index_data1.json";
-  private static final String WIKIPEDIA_DATA_2 = "wikipedia_index_data2.json";
-  private static final String WIKIPEDIA_DATA_3 = "wikipedia_index_data3.json";
-
-  @Override
-  public Stream<? extends Arguments> provideArguments(ExtensionContext extensionContext)
-  {
-    return Stream.of(
-            Arguments.of(new Pair<>(INPUT_SOURCE_URIS_KEY,
-                    ImmutableList.of(
-                            "azure://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_1,
-                            "azure://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_2,
-                            "azure://%%BUCKET%%/%%PATH%%" + WIKIPEDIA_DATA_3
-                    )
-            )),
-            Arguments.of(new Pair<>(INPUT_SOURCE_PREFIXES_KEY,
-                    ImmutableList.of(
-                            "azure://%%BUCKET%%/%%PATH%%"
-                    )
-            )),
-            Arguments.of(new Pair<>(INPUT_SOURCE_OBJECTS_KEY,
-                    ImmutableList.of(
-                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_1),
-                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_2),
-                            ImmutableMap.of("bucket", "%%BUCKET%%", "path", "%%PATH%%" + WIKIPEDIA_DATA_3)
-                    )
-            )));
-  }
 
   void doTest(Pair<String, List> azureInputSource) throws Exception
   {

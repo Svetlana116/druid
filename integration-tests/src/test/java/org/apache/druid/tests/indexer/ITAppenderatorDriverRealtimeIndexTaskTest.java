@@ -33,6 +33,7 @@ import org.apache.druid.tests.TestGroup;
 import org.joda.time.DateTime;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import javax.ws.rs.core.MediaType;
 import java.io.BufferedReader;
@@ -45,6 +46,7 @@ import java.util.Map;
 /**
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.REALTIME_INDEX)
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtimeIndexTaskTest

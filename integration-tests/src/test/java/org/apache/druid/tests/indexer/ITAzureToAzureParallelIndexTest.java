@@ -56,7 +56,6 @@ public class ITAzureToAzureParallelIndexTest extends AbstractAzureInputSourcePar
   private static final String WIKIPEDIA_DATA_2 = "wikipedia_index_data2.json";
   private static final String WIKIPEDIA_DATA_3 = "wikipedia_index_data3.json";
 
-
   public Stream<Arguments> resources()
   {
     return Stream.of(

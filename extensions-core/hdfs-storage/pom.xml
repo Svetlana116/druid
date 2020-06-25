@@ -389,6 +389,12 @@
         <artifactId>junit-vintage-engine</artifactId>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13</version>
+        <scope>test</scope>
+      </dependency>
         <dependency>
           <groupId>org.apache.druid</groupId>
           <artifactId>druid-server</artifactId>

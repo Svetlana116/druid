@@ -46,7 +46,7 @@ stages:
 
 jobs:
   include:
-  - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
+    - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
       jdk: openjdk8
       services:
         - docker
@@ -62,25 +62,25 @@ jobs:
             docker exec -it druid-$v sh -c 'dmesg | tail -3' ;
             done
 
-  - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
-    jdk: openjdk8
-    services:
-      - docker
-    env: TESTNG_GROUPS='other-index' JVM_RUNTIME='-Djvm.runtime=8'
-    script:
-      - ${MVN} verify -pl integration-tests -P integration-tests ${TESTNG_GROUPS} ${JVM_RUNTIME} ${MAVEN_SKIP}
-    after_failure:
-      - for v in ~/shared/logs/*.log ; do
-        echo $v logtail ======================== ; tail -100 $v ;
-        done
-        - for v in broker middlemanager overlord router coordinator historical ; do
-        echo $v dmesg ======================== ;
-        docker exec -it druid-$v sh -c 'dmesg | tail -3' ;
-        done
-
-  - name: "(Compile=openjdk8, Run=openjdk11) other integration test"
+    - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
       jdk: openjdk8
-      env: TESTNG_GROUPS='-DexcludedGroups=other-index' JVM_RUNTIME='-Djvm.runtime=11'
+      services:
+        - docker
+      env: TESTNG_GROUPS='other-index' JVM_RUNTIME='-Djvm.runtime=8'
+      script:
+        - ${MVN} verify -pl integration-tests -P integration-tests ${TESTNG_GROUPS} ${JVM_RUNTIME} ${MAVEN_SKIP}
+      after_failure:
+        - for v in ~/shared/logs/*.log ; do
+          echo $v logtail ======================== ; tail -100 $v ;
+          done
+          - for v in broker middlemanager overlord router coordinator historical ; do
+          echo $v dmesg ======================== ;
+          docker exec -it druid-$v sh -c 'dmesg | tail -3' ;
+          done
+
+    - name: "(Compile=openjdk8, Run=openjdk11) other integration test"
+        jdk: openjdk8
+        env: TESTNG_GROUPS='-DexcludedGroups=other-index' JVM_RUNTIME='-Djvm.runtime=11'
     # END - Integration tests for Compile with Java 8 and Run with Java 11
 
 # Travis CI only supports per build (and not per-job notifications): https://github.com/travis-ci/travis-ci/issues/9888

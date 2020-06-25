@@ -46,43 +46,62 @@ stages:
 
 jobs:
   include:
-    - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
-      jdk: openjdk8
-      services:
-        - docker
-      env: TESTNG_GROUPS='-DexcludedGroups=batch-index,perfect-rollup-parallel-batch-index,kafka-index,query,realtime-index,security,s3-deep-storage,gcs-deep-storage,azure-deep-storage,hdfs-deep-storage,s3-ingestion,kinesis-index,kinesis-data-format,kafka-transactional-index,kafka-index-slow,kafka-transactional-index-slow,kafka-data-format,hadoop-s3-to-s3-deep-storage,hadoop-s3-to-hdfs-deep-storage,hadoop-azure-to-azure-deep-storage,hadoop-azure-to-hdfs-deep-storage,hadoop-gcs-to-gcs-deep-storage,hadoop-gcs-to-hdfs-deep-storage' JVM_RUNTIME='-Djvm.runtime=8'
-      script:
-        - ${MVN} verify -pl integration-tests -P integration-tests ${TESTNG_GROUPS} ${JVM_RUNTIME} ${MAVEN_SKIP}
-      after_failure:
-        - for v in ~/shared/logs/*.log ; do
-            echo $v logtail ======================== ; tail -100 $v ;
-            done
-            - for v in broker middlemanager overlord router coordinator historical ; do
-            echo $v dmesg ======================== ;
-            docker exec -it druid-$v sh -c 'dmesg | tail -3' ;
-            done
+    - name: "(openjdk8) strict compilation"
+      install: skip
+      # Strict compilation requires more than 2 GB
+      script: >
+        MAVEN_OPTS='-Xmx3000m' ${MVN} clean -Pstrict compile test-compile --fail-at-end
+        -pl '!benchmarks' ${MAVEN_SKIP} ${MAVEN_SKIP_TESTS}
 
-    - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
+    # Integration tests Java Compile version is set by the machine environment jdk (set by the jdk key)
+    # Integration tests Java Runtime version is set by the JVM_RUNTIME env property (set env key to -Djvm.runtime=<JVM_RUNTIME_VERSION>)
+    # (Currently integration tests only support running with jvm runtime 8 and 11)
+    # START - Integration tests for Compile with Java 8 and Run with Java 8
+    - &integration_batch_index
+      name: "(Compile=openjdk8, Run=openjdk8) batch index integration test"
       jdk: openjdk8
-      services:
+      services: &integration_test_services
         - docker
-      env: TESTNG_GROUPS='-Dgroups=other-index' JVM_RUNTIME='-Djvm.runtime=8'
-      script:
+      env: TESTNG_GROUPS='-Dgroups=batch-index' JVM_RUNTIME='-Djvm.runtime=8'
+      script: &run_integration_test
         - ${MVN} verify -pl integration-tests -P integration-tests ${TESTNG_GROUPS} ${JVM_RUNTIME} ${MAVEN_SKIP}
-      after_failure:
+      after_failure: &integration_test_diags
         - for v in ~/shared/logs/*.log ; do
           echo $v logtail ======================== ; tail -100 $v ;
           done
-          - for v in broker middlemanager overlord router coordinator historical ; do
+        - for v in broker middlemanager overlord router coordinator historical ; do
           echo $v dmesg ======================== ;
           docker exec -it druid-$v sh -c 'dmesg | tail -3' ;
           done
 
-    - name: "(Compile=openjdk8, Run=openjdk11) other integration test"
-        jdk: openjdk8
-        env: TESTNG_GROUPS='-DexcludedGroups=batch-index,perfect-rollup-parallel-batch-index,kafka-index,query,realtime-index,security,s3-deep-storage,gcs-deep-storage,azure-deep-storage,hdfs-deep-storage,s3-ingestion,kinesis-index,kinesis-data-format,kafka-transactional-index,kafka-index-slow,kafka-transactional-index-slow,kafka-data-format,hadoop-s3-to-s3-deep-storage,hadoop-s3-to-hdfs-deep-storage,hadoop-azure-to-azure-deep-storage,hadoop-azure-to-hdfs-deep-storage,hadoop-gcs-to-gcs-deep-storage,hadoop-gcs-to-hdfs-deep-storage' JVM_RUNTIME='-Djvm.runtime=8'
+    - &integration_tests
+      name: "(Compile=openjdk8, Run=openjdk8) other integration test"
+      jdk: openjdk8
+      services: *integration_test_services
+      env: TESTNG_GROUPS='-DexcludedGroups=batch-index,perfect-rollup-parallel-batch-index,kafka-index,query,realtime-index,security,s3-deep-storage,gcs-deep-storage,azure-deep-storage,hdfs-deep-storage,s3-ingestion,kinesis-index,kinesis-data-format,kafka-transactional-index,kafka-index-slow,kafka-transactional-index-slow,kafka-data-format,hadoop-s3-to-s3-deep-storage,hadoop-s3-to-hdfs-deep-storage,hadoop-azure-to-azure-deep-storage,hadoop-azure-to-hdfs-deep-storage,hadoop-gcs-to-gcs-deep-storage,hadoop-gcs-to-hdfs-deep-storage' JVM_RUNTIME='-Djvm.runtime=8'
+      script: *run_integration_test
+      after_failure: *integration_test_diags
+    # END - Integration tests for Compile with Java 8 and Run with Java 8
 
+    # START - Integration tests for Compile with Java 8 and Run with Java 11
+    - <<: *integration_tests
+      name: "(Compile=openjdk8, Run=openjdk11) other integration test"
+      jdk: openjdk8
+      env: TESTNG_GROUPS='-DexcludedGroups=batch-index,perfect-rollup-parallel-batch-index,kafka-index,query,realtime-index,security,s3-deep-storage,gcs-deep-storage,azure-deep-storage,hdfs-deep-storage,s3-ingestion,kinesis-index,kinesis-data-format,kafka-transactional-index,kafka-index-slow,kafka-transactional-index-slow,kafka-data-format,hadoop-s3-to-s3-deep-storage,hadoop-s3-to-hdfs-deep-storage,hadoop-azure-to-azure-deep-storage,hadoop-azure-to-hdfs-deep-storage,hadoop-gcs-to-gcs-deep-storage,hadoop-gcs-to-hdfs-deep-storage' JVM_RUNTIME='-Djvm.runtime=11'
     # END - Integration tests for Compile with Java 8 and Run with Java 11
+
+    - name: "security vulnerabilities"
+      stage: cron
+      install: skip
+      script: |-
+        ${MVN} dependency-check:check || { echo "
+
+        The OWASP dependency check has found security vulnerabilities. Please use a newer version
+        of the dependency that does not have vulnerabilities. If the analysis has false positives,
+        they can be suppressed by adding entries to owasp-dependency-check-suppressions.xml (for more
+        information, see https://jeremylong.github.io/DependencyCheck/general/suppression.html).
+
+        " && false; }
 
 # Travis CI only supports per build (and not per-job notifications): https://github.com/travis-ci/travis-ci/issues/9888
 notifications:

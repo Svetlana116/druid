@@ -78,30 +78,15 @@ jobs:
         docker exec -it druid-$v sh -c 'dmesg | tail -3' ;
         done
 
-
-
-    - name: "(Compile=openjdk8, Run=openjdk11) other integration test"
+  - name: "(Compile=openjdk8, Run=openjdk11) other integration test"
       jdk: openjdk8
       env: TESTNG_GROUPS='-DexcludedGroups=other-index' JVM_RUNTIME='-Djvm.runtime=11'
     # END - Integration tests for Compile with Java 8 and Run with Java 11
 
-    - name: "security vulnerabilities"
-      stage: cron
-      install: skip
-      script: |-
-        ${MVN} dependency-check:check || { echo "
-
-        The OWASP dependency check has found security vulnerabilities. Please use a newer version
-        of the dependency that does not have vulnerabilities. If the analysis has false positives,
-        they can be suppressed by adding entries to owasp-dependency-check-suppressions.xml (for more
-        information, see https://jeremylong.github.io/DependencyCheck/general/suppression.html).
-
-        " && false; }
-
 # Travis CI only supports per build (and not per-job notifications): https://github.com/travis-ci/travis-ci/issues/9888
 notifications:
   email:
-    if: type = cron
+    if:type = cron
     recipients:
       # This is the string "dev@druid.apache.org" encrypted against the apache/druid repo so that forks are unable to
       # use this notification:

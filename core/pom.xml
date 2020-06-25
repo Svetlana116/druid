@@ -294,6 +294,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.easymock</groupId>
       <artifactId>easymock</artifactId>
       <scope>test</scope>
@@ -386,6 +391,19 @@
               <outputDirectory>
                 ${project.build.directory}
               </outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>analyze</id>
+            <goals>
+              <goal>analyze-only</goal>
+            </goals>
+            <configuration>
+            <ignoredDependencies>
+              <ignoredDependency>junit:junit:jar:4.13</ignoredDependency>
+              <ignoredDependency>junit:junit</ignoredDependency>
+              <ignoredUsedUndeclaredDependencies>junit:junit:jar:4.13</ignoredUsedUndeclaredDependencies>
+            </ignoredDependencies>
             </configuration>
           </execution>
         </executions>

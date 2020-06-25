@@ -46,8 +46,7 @@ stages:
 
 jobs:
   include:
-  - &integration_tests_all_groups
-      name: "(Compile=openjdk8, Run=openjdk8) other integration test"
+  - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
       jdk: openjdk8
       services:
         - docker
@@ -63,8 +62,7 @@ jobs:
             docker exec -it druid-$v sh -c 'dmesg | tail -3' ;
             done
 
-  - &integration_tests
-    name: "(Compile=openjdk8, Run=openjdk8) other integration test"
+  - name: "(Compile=openjdk8, Run=openjdk8) other integration test"
     jdk: openjdk8
     services:
       - docker
@@ -82,8 +80,7 @@ jobs:
 
 
 
-    - &integration_tests_groups
-      name: "(Compile=openjdk8, Run=openjdk11) other integration test"
+    - name: "(Compile=openjdk8, Run=openjdk11) other integration test"
       jdk: openjdk8
       env: TESTNG_GROUPS='-DexcludedGroups=other-index' JVM_RUNTIME='-Djvm.runtime=11'
     # END - Integration tests for Compile with Java 8 and Run with Java 11

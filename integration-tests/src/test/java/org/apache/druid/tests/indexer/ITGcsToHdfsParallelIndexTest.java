@@ -47,7 +47,6 @@ import java.util.stream.Stream;
  * 4) Provide -Dresource.file.dir.path=<PATH_TO_FOLDER> with folder that contains GOOGLE_APPLICATION_CREDENTIALS file
  * 5) Run the test with -Dstart.hadoop.docker=true in the mvn command
  */
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.HDFS_DEEP_STORAGE)
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITGcsToHdfsParallelIndexTest extends AbstractGcsInputSourceParallelIndexTest

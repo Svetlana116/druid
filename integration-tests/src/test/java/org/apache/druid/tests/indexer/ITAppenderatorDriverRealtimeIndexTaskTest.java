@@ -46,7 +46,6 @@ import java.util.Map;
 /**
  * See {@link AbstractITRealtimeIndexTaskTest} for test details.
  */
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.REALTIME_INDEX)
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITAppenderatorDriverRealtimeIndexTaskTest extends AbstractITRealtimeIndexTaskTest

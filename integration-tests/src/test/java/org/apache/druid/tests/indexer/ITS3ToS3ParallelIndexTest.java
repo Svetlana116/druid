@@ -26,7 +26,6 @@ import org.apache.druid.testing.guice.DruidGuiceExtension;
 import org.apache.druid.testing.guice.IncludeModule;
 import org.apache.druid.tests.TestGroup;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -45,7 +44,6 @@ import java.util.stream.Stream;
  *    integration-tests/docker/environment-configs/override-examples/s3 for env vars to provide.
  */
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Tag(TestGroup.S3_DEEP_STORAGE)
 @IncludeModule(DruidGuiceExtension.TestModule.class)
 public class ITS3ToS3ParallelIndexTest extends AbstractS3InputSourceParallelIndexTest

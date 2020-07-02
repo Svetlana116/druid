@@ -117,63 +117,63 @@ jobs:
       name: "(openjdk11) processing module test (SQL Compatibility)"
       jdk: openjdk11
 
-
-    - &test_indexing_module
-      <<: *test_processing_module
-      name: "(openjdk8) indexing modules test"
-      env:
-        - MAVEN_PROJECTS='indexing-hadoop,indexing-service,extensions-core/kafka-indexing-service,extensions-core/kinesis-indexing-service'
-
-    - <<: *test_indexing_module
-      name: "(openjdk11) indexing modules test"
-      jdk: openjdk11
-
-    - &test_indexing_module_sqlcompat
-      <<: *test_indexing_module
-      name: "(openjdk8) indexing modules test (SQL Compatibility)"
-      before_script: *setup_sqlcompat
-
-    - <<: *test_indexing_module_sqlcompat
-      name: "(openjdk11) indexing modules test (SQL Compatibility)"
-      jdk: openjdk11
-
-    - &test_server_module
-      <<: *test_processing_module
-      name: "(openjdk8) server module test"
-      env:
-        - MAVEN_PROJECTS='server'
-
-    - <<: *test_server_module
-      name: "(openjdk11) server module test"
-      jdk: openjdk11
-
-    - &test_server_module_sqlcompat
-      <<: *test_server_module
-      name: "(openjdk8) server module test (SQL Compatibility)"
-      before_script: *setup_sqlcompat
-
-    - <<: *test_server_module_sqlcompat
-      name: "(openjdk11) server module test (SQL Compatibility)"
-      jdk: openjdk11
-
-    - &test_other_modules
-      <<: *test_processing_module
-      name: "(openjdk8) other modules test"
-      env:
-        - MAVEN_PROJECTS='!processing,!indexing-hadoop,!indexing-service,!extensions-core/kafka-indexing-service,!extensions-core/kinesis-indexing-service,!server,!web-console'
-
-    - <<: *test_other_modules
-      name: "(openjdk11) other modules test"
-      jdk: openjdk11
-
-    - &test_other_modules_sqlcompat
-      <<: *test_other_modules
-      name: "(openjdk8) other modules test (SQL Compatibility)"
-      before_script: *setup_sqlcompat
-
-    - <<: *test_other_modules_sqlcompat
-      name: "(openjdk11) other modules test (SQL Compatibility)"
-      jdk: openjdk11
+#
+#    - &test_indexing_module
+#      <<: *test_processing_module
+#      name: "(openjdk8) indexing modules test"
+#      env:
+#        - MAVEN_PROJECTS='indexing-hadoop,indexing-service,extensions-core/kafka-indexing-service,extensions-core/kinesis-indexing-service'
+#
+#    - <<: *test_indexing_module
+#      name: "(openjdk11) indexing modules test"
+#      jdk: openjdk11
+#
+#    - &test_indexing_module_sqlcompat
+#      <<: *test_indexing_module
+#      name: "(openjdk8) indexing modules test (SQL Compatibility)"
+#      before_script: *setup_sqlcompat
+#
+#    - <<: *test_indexing_module_sqlcompat
+#      name: "(openjdk11) indexing modules test (SQL Compatibility)"
+#      jdk: openjdk11
+#
+#    - &test_server_module
+#      <<: *test_processing_module
+#      name: "(openjdk8) server module test"
+#      env:
+#        - MAVEN_PROJECTS='server'
+#
+#    - <<: *test_server_module
+#      name: "(openjdk11) server module test"
+#      jdk: openjdk11
+#
+#    - &test_server_module_sqlcompat
+#      <<: *test_server_module
+#      name: "(openjdk8) server module test (SQL Compatibility)"
+#      before_script: *setup_sqlcompat
+#
+#    - <<: *test_server_module_sqlcompat
+#      name: "(openjdk11) server module test (SQL Compatibility)"
+#      jdk: openjdk11
+#
+#    - &test_other_modules
+#      <<: *test_processing_module
+#      name: "(openjdk8) other modules test"
+#      env:
+#        - MAVEN_PROJECTS='!processing,!indexing-hadoop,!indexing-service,!extensions-core/kafka-indexing-service,!extensions-core/kinesis-indexing-service,!server,!web-console'
+#
+#    - <<: *test_other_modules
+#      name: "(openjdk11) other modules test"
+#      jdk: openjdk11
+#
+#    - &test_other_modules_sqlcompat
+#      <<: *test_other_modules
+#      name: "(openjdk8) other modules test (SQL Compatibility)"
+#      before_script: *setup_sqlcompat
+#
+#    - <<: *test_other_modules_sqlcompat
+#      name: "(openjdk11) other modules test (SQL Compatibility)"
+#      jdk: openjdk11
 
 # Travis CI only supports per build (and not per-job notifications): https://github.com/travis-ci/travis-ci/issues/9888
 notifications:
